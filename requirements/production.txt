@@ -1,0 +1,2 @@
+-r base.txt # includes the base.txt requirements file
+# Para production geralmente é apenas o que tem no base.txt
