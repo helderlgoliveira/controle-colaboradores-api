@@ -1,7 +1,7 @@
 from django.db import models, transaction
 from django.contrib.auth import get_user_model
 
-from questionarios_especializados.apps.municipios.models import Municipio
+from controle_colaboradores_api.apps.municipios.models import Municipio
 from configuracoes.leitor_configuracoes import LeitorConfiguracoes
 
 

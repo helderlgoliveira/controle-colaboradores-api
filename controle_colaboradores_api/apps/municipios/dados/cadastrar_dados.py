@@ -1,29 +1,29 @@
 import csv
-from questionarios_especializados.apps.municipios.models import Municipio, RegiaoSaude, Microrregiao, Mesorregiao
+from controle_colaboradores_api.apps.municipios.models import Municipio, RegiaoSaude, Microrregiao, Mesorregiao
 
 # Cadastrar Regiões de Saúde
-with open('questionarios_especializados/apps/municipios/dados/regioesdesaude.csv') as f:
+with open('controle_colaboradores_api/apps/municipios/dados/regioesdesaude.csv') as f:
     leitor = csv.reader(f)
     next(leitor) # pula cabeçalho
     for row in leitor:
         RegioesSaude.objects.get_or_create(numero=row[0])
         
 # Cadastrar Microrregiões
-with open('questionarios_especializados/apps/municipios/dados/microrregioes.csv') as f:
+with open('controle_colaboradores_api/apps/municipios/dados/microrregioes.csv') as f:
     leitor = csv.reader(f)
     next(leitor) # pula cabeçalho
     for row in leitor:
         Microrregioes.objects.get_or_create(nome=row[0])
         
 # Cadastrar Mesorregiões
-with open('questionarios_especializados/apps/municipios/dados/mesorregioes.csv') as f:
+with open('controle_colaboradores_api/apps/municipios/dados/mesorregioes.csv') as f:
     leitor = csv.reader(f)
     next(leitor) # pula cabeçalho
     for row in leitor:
         Mesorregiao.objects.get_or_create(nome=row[0])
         
 # Cadastrar Municípios
-with open('questionarios_especializados/apps/municipios/dados/municipios.csv') as f:
+with open('controle_colaboradores_api/apps/municipios/dados/municipios.csv') as f:
     leitor = csv.reader(f)
     next(leitor) # pula cabeçalho
     for row in leitor:

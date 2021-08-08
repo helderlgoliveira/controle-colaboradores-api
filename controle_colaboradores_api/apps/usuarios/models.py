@@ -39,9 +39,9 @@ class CustomUsuario(AbstractUser):
     is_staff = models.BooleanField('Membro da equipe', default=False)
 
     USERNAME_FIELD = 'email'
+
+    # Nome e sobrenome serão definidos ao criar o perfil, dessa forma não serão obrigatórios aqui.
     REQUIRED_FIELDS = []
-    # Nome e sobrenome serão designados ao criar o perfil, dessa forma fica desativado abaixo:
-    # REQUIRED_FIELDS = ['first_name', 'last_name']
 
     def __str__(self):
         return self.email

@@ -42,9 +42,9 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
 
-    'controle-colaboradores-api.apps.municipios',
-    'controle-colaboradores-api.apps.usuarios',
-    'controle-colaboradores-api.apps.perfis',
+    'controle_colaboradores_api.apps.municipios',
+    'controle_colaboradores_api.apps.usuarios',
+    'controle_colaboradores_api.apps.perfis',
 ]
 
 MIDDLEWARE = [
@@ -57,7 +57,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'controle-colaboradores-api.urls'
+ROOT_URLCONF = 'controle_colaboradores_api.urls'
 
 TEMPLATES = [
     {
@@ -75,7 +75,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'controle-colaboradores-api.wsgi.application'
+WSGI_APPLICATION = 'controle_colaboradores_api.wsgi.application'
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators

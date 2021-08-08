@@ -1,6 +1,7 @@
 # TO DO
 
-- Verificar app usuarios
-- Verificar app municipios para todo brasil
-- Verificar app perfis
+- ADICIONAR TYPE ANOTTATIONS
+- Verificar o app usuarios
+- Verificar o app municipios para todo Brasil
+- Verificar o app perfis
 - ADICIONAR TYPE ANOTTATIONS

@@ -12,11 +12,9 @@ class CustomUsuarioAdmin(UserAdmin):
     form = CustomUsuarioChangeForm
     model = CustomUsuario
     readonly_fields = ('last_login', 'date_joined',)
-    list_display = ('email', 'first_name', 'last_name', 'is_staff')
+    list_display = ('email', 'is_staff')
     fieldsets = (
         (None, {'fields': ('email', 'password')}),
-        # Nome e sobrenome serão designados ao criar o perfil, dessa forma fica desativado abaixo:
-        # ('Informações Pessoais', {'fields': ('first_name', 'last_name')}),
         ('Permissões', {'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions')}),
         ('Datas Importantes', {'fields': ('last_login', 'date_joined')}),
     )
