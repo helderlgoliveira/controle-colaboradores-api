@@ -42,7 +42,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
 
-    'controle_colaboradores_api.apps.municipios',
+    'controle_colaboradores_api.apps.localidades_brasileiras',
     'controle_colaboradores_api.apps.usuarios',
     'controle_colaboradores_api.apps.perfis',
 ]

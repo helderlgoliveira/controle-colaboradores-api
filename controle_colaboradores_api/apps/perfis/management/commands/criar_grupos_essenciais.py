@@ -7,7 +7,7 @@ from configuracoes.leitor_configuracoes import LeitorConfiguracoes as lConf
 
 
 class Command(BaseCommand):
-    help = "Cria ou confirma a criação dos grupos de usuários essenciais ao funcionamento do projto."
+    help = "Cria ou confirma a criação dos grupos de usuários essenciais ao funcionamento do projeto."
 
     @transaction.atomic
     def handle(self, *args, **options):

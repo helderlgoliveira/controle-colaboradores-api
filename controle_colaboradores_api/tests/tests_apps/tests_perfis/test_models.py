@@ -1,7 +1,7 @@
 import pytest
 from model_bakery import baker
 
-from controle_colaboradores_api.apps.municipios.models import Municipio
+from controle_colaboradores_api.apps.localidades.models import Municipio
 from controle_colaboradores_api.apps.perfis.models import \
     Perfil, \
     Telefone, \
