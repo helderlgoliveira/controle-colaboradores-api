@@ -9,3 +9,4 @@
 
 - executar o cadsatrar localidades_brasileiras
 - executar o cadastrar grupos
+- docker-compose com server, db e envs

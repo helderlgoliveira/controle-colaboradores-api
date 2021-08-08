@@ -1,5 +1,7 @@
 from django.db import models, transaction
+from django.db.models import Q
 from django.contrib.auth import get_user_model
+from django.core.validators import MinValueValidator
 
 from controle_colaboradores_api.apps.localidades_brasileiras.models import Municipio
 
@@ -27,29 +29,23 @@ class Perfil(BaseParaModelsImportantes):
     usuario = models.OneToOneField(get_user_model(), related_name="perfil", on_delete=models.CASCADE)
     nome = models.CharField('Nome', max_length=200)
     sobrenome = models.CharField('Sobrenome', max_length=200)
-    cpf = models.CharField('CPF', max_length=40, unique=True)
-    dados_bancarios = models.CharField('Dados bancários', max_length=200)
-
-    contrato_identificador = models.CharField('Número do Contrato', max_length=200)
+    cpf = models.CharField('CPF', max_length=40, unique=True, blank=True)
+    contrato_identificador = models.CharField('Identificador do Contrato', max_length=200)
     data_admissao = models.DateField('Data de admissão')
-    data_demissao = models.DateField('Data de demissão')
-    # telefones (related_name da class Telefone)
-    # outros_emails (related_name da class OutroEmail)
-    # enderecos (related_name da class Endereços)
+    data_demissao = models.DateField('Data de demissão', null=True)
+    dados_bancarios_banco = models.CharField('Dados bancários - Banco', max_length=200, blank=True)
+    dados_bancarios_agencia = models.CharField('Dados bancários - Agência', max_length=200, blank=True)
+    dados_bancarios_conta = models.CharField('Dados bancários - Conta', max_length=200, blank=True)
 
-    # TODO Endereços (One to Many - Foreign)
-    endereco_logradouro = ''
-    endereco_numero = ''
-    endereco_bairro = ''
-    endereco_municipio = models.ForeignKey(Municipio, related_name="perfis", on_delete=models.RESTRICT)
-    endereco_complemento = ''
-    endereco_cep = ''
-    endereco''
-    # TODO Cargos e Setores (Many to Many)
-    cargos = models.ManyToManyField(Municipio, through='MunicipioOndeTrabalha')
-    setores = models.ManyToManyField(Municipio, through='MunicipioOndeTrabalha')
+    # Cargos, Departamentos e Municípios múltiplos pela possibilidade de acumulação
+    cargos = models.ManyToManyField('Cargos', related_name='perfis')
+    departamentos = models.ManyToManyField('Departamentos', related_name='perfis')
     municipios_onde_trabalha = models.ManyToManyField(Municipio, through='MunicipioOndeTrabalha')
 
+    # Mais atributos existentes via related_name:
+    # - telefones (class Telefone)
+    # - outros_emails (class OutroEmail)
+    # - enderecos (class Endereco)
 
     class Meta:
         verbose_name = 'Perfil'
@@ -64,6 +60,35 @@ class Perfil(BaseParaModelsImportantes):
             self.usuario.last_name = self.sobrenome
             self.usuario.save()
             super().save(*args, **kwargs)
+
+
+class Endereco(Base):
+    perfil = models.ForeignKey(Perfil, related_name="enderecos", on_delete=models.CASCADE)
+    is_principal = models.BooleanField("É o endereço principal", default=False)
+    logradouro = models.CharField('Logradouro', max_length=200)
+    numero = models.CharField('Número', max_length=10)
+    bairro = models.CharField('Bairro', max_length=50)
+    complemento = models.CharField('Complemento', max_length=50, blank=True)
+    municipio = models.ForeignKey(Municipio, related_name="perfis", on_delete=models.RESTRICT)
+    cep = models.CharField('CEP', max_length=20)
+
+    @property
+    def endereco_completo(self):
+        return f"{self.logradouro}, {self.numero}, {self.bairro}," \
+               f" {self.complemento}, {self.municipio.nome}-{self.municipio.uf.sigla}, {self.cep}."
+
+    class Meta:
+        verbose_name = 'Endereço'
+        verbose_name_plural = 'Endereços'
+        ordering = ['perfil']
+        constraints = [
+            models.UniqueConstraint(fields=['perfil', 'is_principal'],
+                                    condition=Q(is_principal=True),
+                                    name='unique_endereco_principal_por_perfil')
+        ]
+
+    def __str__(self):
+        return f'{self.perfil.usuario.email} - {self.endereco_completo}'
 
 
 class Telefone(Base):
@@ -94,8 +119,46 @@ class OutroEmail(Base):
         return self.email
 
 
+class Cargo(Base):
+    nome = models.CharField('Nome', max_length=50)
+    classe = models.CharField('Classe', max_length=50)
+    salario = models.DecimalField('Salário', decimal_places=2, validators=[MinValueValidator(1)])
+
+    class Meta:
+        verbose_name = 'Cargo'
+        verbose_name_plural = 'Cargos'
+        unique_together = ['nome', 'classe']
+        constraints = [
+            models.CheckConstraint(check=Q(salario__gt=0), name='salario_gt_zero')
+        ]
+
+    def __str__(self):
+        return f'{self.nome} - {self.classe}'
+
+
+class Departamento(Base):
+    nome = models.CharField('Nome', max_length=100)
+    diretor = models.ForeignKey(get_user_model(),
+                                verbose_name="Diretor do departamento",
+                                on_delete=models.RESTRICT)
+    diretor_substituto = models.ForeignKey(get_user_model(),
+                                           verbose_name="Diretor substituto do departamento",
+                                           on_delete=models.RESTRICT,
+                                           null=True)
+    departamento_superior = models.ForeignKey('Departamento',
+                                              null=True,
+                                              related_name="departamentos_subordinados",
+                                              on_delete=models.RESTRICT)
+
+    class Meta:
+        verbose_name = 'Departamento'
+        verbose_name_plural = 'Departamentos'
+
+    def __str__(self):
+        return f'{self.nome}'
+
+
 class MunicipioOndeTrabalha(Base):
-    # ManyToOne porque um município pode ser atribuído a mais de um usuário (substitutos, designados etc).
     perfil = models.ForeignKey(Perfil, on_delete=models.CASCADE)
 
     municipio = models.ForeignKey(Municipio,

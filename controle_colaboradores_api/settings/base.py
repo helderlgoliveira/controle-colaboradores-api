@@ -127,11 +127,7 @@ STATIC_ROOT = BASE_DIR / 'static'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
-
-
-# Custom model para usuários: (usuarios. aqui é o nome do aplicativo)
-# AUTH_USER_MODEL = 'usuarios.CustomUsuario'
-# TODO Para produção, descomentar acima e implementar o app usuarios.
+AUTH_USER_MODEL = 'usuarios.CustomUsuario'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
@@ -147,7 +143,7 @@ REST_FRAMEWORK = {
     ),
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAdminUser',
-        #'rest_framework.permissions.IsAuthenticatedOrReadOnly',
+        # 'rest_framework.permissions.IsAuthenticatedOrReadOnly',
     ),
     # 'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     # 'PAGE_SIZE': 2,
@@ -160,3 +156,9 @@ REST_FRAMEWORK = {
         'user': '60/minute'
     }
 }
+
+# Settings para o projeto atual:
+USER_GROUPS_DO_PROJETO = [
+    'Administradores',
+    'Colaboradores'
+]
