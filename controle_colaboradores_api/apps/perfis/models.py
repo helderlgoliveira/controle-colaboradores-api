@@ -42,7 +42,7 @@ class Perfil(BaseParaModelsImportantes):
     departamentos = models.ManyToManyField('Departamentos', related_name='perfis')
     municipios_onde_trabalha = models.ManyToManyField(Municipio, through='MunicipioOndeTrabalha')
 
-    # Mais atributos existentes via related_name:
+    # Mais atributos já existentes via related_name:
     # - telefones (class Telefone)
     # - outros_emails (class OutroEmail)
     # - enderecos (class Endereco)
