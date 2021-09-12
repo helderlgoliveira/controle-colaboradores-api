@@ -6,7 +6,7 @@ from .serializers import PerfilSerializer
 from .views_access_policies import PerfilAccessPolicy
 
 
-class ArticleViewSet(ModelViewSet):
+class PerfilViewSet(ModelViewSet):
     permission_classes = (PerfilAccessPolicy, )
     serializer_class = PerfilSerializer
 

@@ -3,13 +3,13 @@ from rest_framework import serializers
 from controle_colaboradores_api.apps.usuarios.serializers import CustomUsuarioSerializer
 from controle_colaboradores_api.apps.localidades_brasileiras.serializers import MunicipioSerializer
 
-from .models import \
-    Perfil, \
-    Endereco, \
-    Telefone, \
-    OutroEmail, \
-    Cargo, \
-    Departamento
+from .models import (
+    Perfil,
+    Endereco,
+    Telefone,
+    OutroEmail,
+    Cargo,
+    Departamento)
 
 
 class EnderecoSerializer(serializers.ModelSerializer):
