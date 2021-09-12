@@ -1,7 +1,8 @@
 # TO DO
 
-- Fazer o formato para cadastrar o perfil completo:-
--- com todos os nested, lembrando que o municipio_onde_trabalha recebe PK do perfil e do municipio para cadastrar, dessa forma primeiro acho salva sem eles acho e depois update partial o PK do perfil (depois de gerado ne, assim: [Writable nested serializers](https://www.django-rest-framework.org/api-guide/relations/#writable-nested-serializers))
+
+- Fazer views?
+
 
 ## Apenas para salvar:
 - fazer create e update no serializer onde há nested relacionamentos [Writable nested serializers](https://www.django-rest-framework.org/api-guide/relations/#writable-nested-serializers)

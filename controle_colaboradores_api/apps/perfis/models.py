@@ -40,7 +40,7 @@ class Perfil(BaseParaModelsImportantes):
     # Cargos, Departamentos e Municípios múltiplos pela possibilidade de acumulação
     cargos = models.ManyToManyField('Cargos', related_name='perfis')
     departamentos = models.ManyToManyField('Departamentos', related_name='perfis')
-    municipios_onde_trabalha = models.ManyToManyField(Municipio, through='MunicipioOndeTrabalha')
+    municipios_onde_trabalha = models.ManyToManyField('Municipio', related_name='perfis')
 
     # Mais atributos já existentes via related_name:
     # - telefones (class Telefone)
@@ -156,19 +156,3 @@ class Departamento(Base):
 
     def __str__(self):
         return f'{self.nome}'
-
-
-class MunicipioOndeTrabalha(Base):
-    perfil = models.ForeignKey(Perfil, on_delete=models.CASCADE)
-
-    municipio = models.ForeignKey(Municipio,
-                                  related_name="perfis",
-                                  verbose_name='Município onde trabalha',
-                                  on_delete=models.RESTRICT)
-
-    class Meta:
-        verbose_name = 'Município onde trabalha'
-        verbose_name_plural = 'Municípios onde trabalha'
-
-    def __str__(self):
-        return f'{self.perfil.usuario.email} - {self.municipio.nome}'

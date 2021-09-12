@@ -6,12 +6,12 @@ authors = ["Hélder Lima Gonçalves de Oliveira <helderlgoliveira@gmail.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.8"
-Django = "3.2"
-djangorestframework = "3.12.4"
-drf-access-policy = "0.9.0"
-gunicorn = "20.0.4"
-psycopg2-binary = "2.8.6"
-argon2-cffi = "20.1.0"
+Django = "^3.2.7"
+djangorestframework = "^3.12.4"
+drf-access-policy = "^1.1.0"
+gunicorn = "^20.1.0"
+psycopg2-binary = "^2.9.1"
+argon2-cffi = "^21.1.0"
 
 [tool.poetry.dev-dependencies]
 coverage = "^5.5"
