@@ -20,7 +20,7 @@
 
 ## Stages para deploy
 
-- manage.py makemigrations e migrate
+- manage.py migrate (O MAKEMIGRATIONS SOMENTE NO DEV PARA COMMIT, na production deve usar as mesmas migrations)
 - executar o cadsatrar localidades_brasileiras
 - executar o cadastrar grupos
 - docker-compose com server, db e envs
