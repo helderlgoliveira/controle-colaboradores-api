@@ -3,8 +3,6 @@ from django.db.models import Q
 from django.contrib.auth import get_user_model
 from django.core.validators import MinValueValidator
 
-from controle_colaboradores_api.apps.localidades_brasileiras.models import Municipio
-
 
 class Base(models.Model):
     criacao = models.DateTimeField('Criação', auto_now_add=True)
@@ -38,9 +36,9 @@ class Perfil(BaseParaModelsImportantes):
     dados_bancarios_conta = models.CharField('Dados bancários - Conta', max_length=200, blank=True)
 
     # Cargos, Departamentos e Municípios múltiplos pela possibilidade de acumulação
-    cargos = models.ManyToManyField('Cargos', related_name='perfis')
-    departamentos = models.ManyToManyField('Departamentos', related_name='perfis')
-    municipios_onde_trabalha = models.ManyToManyField('Municipio', related_name='perfis')
+    cargos = models.ManyToManyField('Cargo', related_name='perfis')
+    departamentos = models.ManyToManyField('Departamento', related_name='perfis')
+    municipios_onde_trabalha = models.ManyToManyField('localidades_brasileiras.Municipio', related_name='perfis')
 
     # Mais atributos já existentes via related_name:
     # - telefones (class Telefone)
@@ -69,7 +67,7 @@ class Endereco(Base):
     numero = models.CharField('Número', max_length=10)
     bairro = models.CharField('Bairro', max_length=50)
     complemento = models.CharField('Complemento', max_length=50, blank=True)
-    municipio = models.ForeignKey(Municipio, related_name="perfis", on_delete=models.RESTRICT)
+    municipio = models.ForeignKey('localidades_brasileiras.Municipio', related_name="enderecos", on_delete=models.RESTRICT)
     cep = models.CharField('CEP', max_length=20)
 
     @property
@@ -122,7 +120,7 @@ class OutroEmail(Base):
 class Cargo(Base):
     nome = models.CharField('Nome', max_length=50)
     classe = models.CharField('Classe', max_length=50)
-    salario = models.DecimalField('Salário', decimal_places=2, validators=[MinValueValidator(1)])
+    salario = models.DecimalField('Salário', decimal_places=2, max_digits=20, validators=[MinValueValidator(1)])
 
     class Meta:
         verbose_name = 'Cargo'
@@ -140,11 +138,13 @@ class Departamento(Base):
     nome = models.CharField('Nome', max_length=100)
     diretor = models.ForeignKey(get_user_model(),
                                 verbose_name="Diretor do departamento",
-                                on_delete=models.RESTRICT)
+                                on_delete=models.RESTRICT,
+                                related_name="diretor_em")
     diretor_substituto = models.ForeignKey(get_user_model(),
                                            verbose_name="Diretor substituto do departamento",
                                            on_delete=models.RESTRICT,
-                                           null=True)
+                                           null=True,
+                                           related_name="diretor_substituto_em")
     departamento_superior = models.ForeignKey('Departamento',
                                               null=True,
                                               related_name="departamentos_subordinados",

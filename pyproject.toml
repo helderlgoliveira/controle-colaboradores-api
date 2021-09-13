@@ -12,6 +12,7 @@ drf-access-policy = "^1.1.0"
 gunicorn = "^20.1.0"
 psycopg2-binary = "^2.9.1"
 argon2-cffi = "^21.1.0"
+drf-writable-nested = "^0.6.3"
 
 [tool.poetry.dev-dependencies]
 coverage = "^5.5"

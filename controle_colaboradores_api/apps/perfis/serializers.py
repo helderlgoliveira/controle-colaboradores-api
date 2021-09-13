@@ -1,7 +1,8 @@
 from rest_framework import serializers
+from drf_writable_nested.serializers import WritableNestedModelSerializer
 
+from controle_colaboradores_api.apps.usuarios.models import CustomUsuario
 from controle_colaboradores_api.apps.usuarios.serializers import CustomUsuarioSerializer
-from controle_colaboradores_api.apps.localidades_brasileiras.serializers import MunicipioSerializer
 
 from .models import (
     Perfil,
@@ -121,13 +122,16 @@ class DepartamentoSerializer(serializers.ModelSerializer):
         ]
 
 
-class PerfilSerializer(serializers.ModelSerializer):
+class PerfilSerializer(WritableNestedModelSerializer):
+    # Fields do model Base:
+    usuario_modificacao = serializers.HiddenField(default=serializers.CurrentUserDefault())
+    # Fields do model:
     usuario = CustomUsuarioSerializer()
-    municipios_onde_trabalha = MunicipioSerializer(many=True)
-    enderecos = EnderecoSerializer(many=True)
-    telefones = TelefoneSerializer(many=True)
     cargos = CargoSerializer(many=True)
     departamentos = DepartamentoSerializer(many=True)
+    # Fields de related_names:
+    enderecos = EnderecoSerializer(many=True)
+    telefones = TelefoneSerializer(many=True)
     outros_emails = OutroEmailSerializer(many=True)
 
     class Meta:

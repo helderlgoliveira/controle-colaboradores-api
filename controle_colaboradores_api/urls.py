@@ -13,20 +13,18 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from django.contrib import admin
+
 from django.urls import path, include
 
-from api_cursos.urls import router
+from controle_colaboradores_api.apps.perfis.urls import urlpatterns as perfis_urls
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('', include('appexemplo.urls')),
+    # path('', include('appexemplo.urls')),
 
-    path('minhaconta/', include('django.contrib.auth.urls')),
+    # path('minhaconta/', include('django.contrib.auth.urls')),
 
-    path('api/v1/', include('api_cursos.urls')),
-    path('api/v2/', include(router.urls)),
-    path('auth/', include('rest_framework.urls')),
+    path('api/v1/', include(perfis_urls)),
+    path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
 ]
 
 """

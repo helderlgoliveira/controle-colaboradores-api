@@ -15,7 +15,7 @@ class UnidadeFederativa(Base):
     cod_ibge = models.CharField('Código do IBGE', max_length=50, unique=True)
     latitude = models.CharField('Latitude', max_length=50)
     longitude = models.CharField('Longitude', max_length=50)
-    capital = models.OneToOneField('Municipio', related_name="capital_de", on_delete=models.RESTRICT)
+    capital = models.OneToOneField('Municipio', related_name="capital_de", on_delete=models.RESTRICT, null=True)
 
     class Meta:
         verbose_name = 'Unidade Federativa'
@@ -26,7 +26,7 @@ class UnidadeFederativa(Base):
 
 
 class Municipio(Base):
-    nome = models.CharField('Nome do Município', max_length=200, unique=True)
+    nome = models.CharField('Nome do Município', max_length=200)
     cod_ibge = models.CharField('Código do IBGE', max_length=50, unique=True)
     uf = models.ForeignKey('UnidadeFederativa', related_name="municipios", on_delete=models.CASCADE)
     latitude = models.CharField('Latitude', max_length=50)
