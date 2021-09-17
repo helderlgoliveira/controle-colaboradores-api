@@ -37,6 +37,13 @@ class EnderecoSerializer(serializers.ModelSerializer):
             'criacao',
             'modificacao'
         ]
+        validators = [
+            serializers.UniqueTogetherValidator(
+                queryset=model.objects.all(),
+                fields=('perfil', 'is_principal'),
+                message=("Somente um endereço principal por perfil")
+            )
+        ]
 
 
 class TelefoneSerializer(serializers.ModelSerializer):
@@ -123,16 +130,16 @@ class DepartamentoSerializer(serializers.ModelSerializer):
 
 
 class PerfilSerializer(WritableNestedModelSerializer):
-    # Fields do model Base:
-    usuario_modificacao = serializers.HiddenField(default=serializers.CurrentUserDefault())
-    # Fields do model:
-    usuario = CustomUsuarioSerializer()
-    cargos = CargoSerializer(many=True)
-    departamentos = DepartamentoSerializer(many=True)
-    # Fields de related_names:
-    enderecos = EnderecoSerializer(many=True)
-    telefones = TelefoneSerializer(many=True)
-    outros_emails = OutroEmailSerializer(many=True)
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        data['usuario'] = CustomUsuarioSerializer(instance.usuario).data
+        data['cargos'] = CargoSerializer(instance.cargos.all()).data
+        data['departamentos'] = DepartamentoSerializer(instance.departamentos.all()).data
+        data['enderecos'] = DepartamentoSerializer(instance.enderecos.all()).data
+        data['telefones'] = DepartamentoSerializer(instance.telefones.all()).data
+        data['outros_emails'] = DepartamentoSerializer(instance.outros_emails.all()).data
+        return data
 
     class Meta:
         model = Perfil
@@ -167,6 +174,10 @@ class PerfilSerializer(WritableNestedModelSerializer):
             # Fields do model Base:
             'id',
             'criacao',
-            'modificacao'
+            'modificacao',
+            # Fields do model BaseParaModelsImportantes:
+            'usuario_modificacao',
         ]
+
+        # TODO fazer o CREATE e UPDATE para ser ATOMIC
 

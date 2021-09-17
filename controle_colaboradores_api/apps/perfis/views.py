@@ -1,4 +1,3 @@
-from rest_framework.decorators import action
 from rest_framework.viewsets import ModelViewSet
 
 from .models import Perfil
@@ -15,7 +14,10 @@ class PerfilViewSet(ModelViewSet):
         return self.permission_classes[0]
 
     def get_queryset(self):
-        initial_queryset = Perfil.objects.all()
-        return self.access_policy.scope_queryset(
-            self.request, initial_queryset
-        )
+        return Perfil.objects.all()
+
+    def perform_create(self, serializer):
+        serializer.save(usuario_modificacao=self.request.user)
+
+    def perform_update(self, serializer):
+        serializer.save(usuario_modificacao=self.request.user)

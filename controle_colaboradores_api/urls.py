@@ -16,35 +16,15 @@ Including another URLconf
 
 from django.urls import path, include
 
+from controle_colaboradores_api.apps.usuarios.urls import urlpatterns as usuarios_urls
 from controle_colaboradores_api.apps.perfis.urls import urlpatterns as perfis_urls
+from controle_colaboradores_api.apps.localidades_brasileiras.urls import urlpatterns as localidades_brasileiras_urls
 
 urlpatterns = [
-    # path('', include('appexemplo.urls')),
-
-    # path('minhaconta/', include('django.contrib.auth.urls')),
-
-    path('api/v1/', include(perfis_urls)),
-    path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+    path('api/v1/', include(
+        usuarios_urls +
+        perfis_urls +
+        localidades_brasileiras_urls
+    )),
+    path('api/auth/', include('rest_framework.urls', namespace='rest_framework')),
 ]
-
-"""
-admin.site.site_header = 'Geek University'
-admin.site.site_title = 'Evolua seu lado geek!'
-admin.site.index_title = 'Sistema de Gerenciamento de Posts'
-"""
-
-"""
-O include do minhaconta/ inclui:
-
-minhaconta/login/ [name='login']
-minhaconta/logout/ [name='logout']
-minhaconta/password_change/ [name='password_change']
-minhaconta/password_change/done/ [name='password_change_done']
-minhaconta/password_reset/ [name='password_reset']
-minhaconta/password_reset/done/ [name='password_reset_done']
-minhaconta/reset/<uidb64>/<token>/ [name='password_reset_confirm']
-minhaconta/reset/done/ [name='password_reset_complete']
-
-- Lembrando que a página de login, por padrão fica no caminho: /RAIZ_DO_PROJETO_registration/login.html
-Talvez precise fazer modificações para ela ser encontrada na raiz do app usuarios, em vez da raiz do projeto.
-"""

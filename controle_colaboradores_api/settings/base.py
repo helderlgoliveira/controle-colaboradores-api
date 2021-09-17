@@ -153,7 +153,11 @@ REST_FRAMEWORK = {
 }
 
 # Settings para o projeto atual:
+NOME_DO_PROJETO = "Sistema de Controle de Colaboradores"
+
 USER_GROUPS_DO_PROJETO = [
     'Administradores',
     'Colaboradores'
 ]
+
+URL_BASE_CRIAR_NOVA_PASSWORD_APOS_RESETAR_PASSWORD = ".../"

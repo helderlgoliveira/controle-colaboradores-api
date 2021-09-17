@@ -20,9 +20,3 @@ class PerfilAccessPolicy(AccessPolicy):
         perfil = view.get_object()
         return request.user == perfil.usuario
 
-    @classmethod
-    def scope_queryset(cls, request, queryset):
-        if request.user.groups.filter(name='Administradores').exists():
-            return queryset
-        return queryset.filter(status='Colaboradores')
-

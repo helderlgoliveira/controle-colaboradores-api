@@ -1,8 +1,9 @@
 # TO DO
 
-- ver na documentação diferença entre create (serializer) e perform_create(view)
+- Usuarios tem que criar funçao serializer para mudar senha etc [site](obsidian://open?vault=HL's%20vault&file=Pessoais%2FDjango)
+- CRIAR viewset para cargos e departamentos, enderecos etc, e no lugar do destroy o desativar...
 - OVERRIDE create e update para TRANSACSTION.ATOMIC e puxar o create_user do CustomUsuarioManager (confirmar se todos methods username=email)
-- Fazer visualização do municipio serializer
+- Fazer visualização do municipio serializer 
 - fazer voltar o usuario modificacao (colocar no peform creat da view?)
 - Fazer Views cargos e departamentos
 - ...

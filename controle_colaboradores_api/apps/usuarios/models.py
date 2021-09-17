@@ -1,10 +1,17 @@
-from django.db import models
+import os
+import binascii
+import random
+from datetime import datetime, timedelta
+
+from django.db import models, transaction
+from django.core.mail import send_mail
+from django.conf import settings
 
 from django.contrib.auth.models import AbstractUser, BaseUserManager
+from django.contrib.auth import get_user_model
 
 
 class UsuarioCustomizadoManager(BaseUserManager):
-
     use_in_migrations = True
 
     def _create_user(self, email, password, **extra_fields):
@@ -47,3 +54,36 @@ class CustomUsuario(AbstractUser):
         return self.email
 
     objects = UsuarioCustomizadoManager()
+
+
+class PasswordResetToken(models.Model):
+    usuario = models.OneToOneField(get_user_model(), related_name="password_reset_tokens", on_delete=models.CASCADE)
+    token = models.CharField('Token', unique=True, max_length=64, db_index=True)
+    criacao = models.DateTimeField('Criação', auto_now_add=True)
+    ativo = models.BooleanField('Ativo', default=True)
+
+    @property
+    def expirado(self):
+        prazo_em_dias = 1
+        expiracao = self.criacao + timedelta(days=prazo_em_dias)
+        if datetime.now() > expiracao:
+            return True
+        return False
+
+    def gerar_token(self, *args, **kwargs):
+        length = random.randint(40, 60)
+        return binascii.hexlify(os.urandom(length)).decode()[0:length]
+
+    def save(self, *args, **kwargs):
+        with transaction.atomic():
+            self.token = self.gerar_token()
+            super().save(*args, **kwargs)
+            send_mail(
+                f'Criar nova senha - {settings.NOME_DO_PROJETO}',
+                f'Olá, {self.usuario.nome}! \n'
+                f'Segue o link para criar a sua nova senha: \n'
+                f'{settings.URL_BASE_CRIAR_NOVA_PASSWORD_APOS_RESETAR_PASSWORD}{self.token}',
+                None,
+                [self.usuario.email],
+                fail_silently=False,
+            )

@@ -22,6 +22,7 @@ class UnidadeFederativaSerializer(serializers.ModelSerializer):
 
 
 class MunicipioSerializer(serializers.ModelSerializer):
+    uf = UnidadeFederativaSerializer()
 
     class Meta:
         model = Municipio
@@ -39,4 +40,3 @@ class MunicipioSerializer(serializers.ModelSerializer):
         read_only_fields = [
             'id'
         ]
-
