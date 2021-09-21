@@ -5,7 +5,7 @@ from rest_framework.viewsets import ModelViewSet, GenericViewSet
 from django.contrib.auth.models import Group
 
 from .models import CustomUsuario, PasswordResetToken
-from .serializers import GroupSerializer, CustomUsuarioSerializer, PasswordResetTokenSerializer, PasswordSerializer
+from .serializers import GroupSerializer, CustomUsuarioSerializer, PasswordResetTokenSerializer
 from .views_access_policies import GroupAccessPolicy, CustomUsuarioAccessPolicy, PasswordResetTokenAccessPolicy
 
 
@@ -28,32 +28,28 @@ class CustomUsuarioViewSet(ModelViewSet):
 
     @action(detail=True, methods=['patch'])
     def criar_nova_password_apos_reset(self, request, pk=None):
-        user = self.get_object()
+        usuario = self.get_object()
         token = request.query_params['token']
-        serializer = PasswordSerializer(data=request.data)
+        serializer = CustomUsuarioSerializer(usuario, data=request.data, partial=True)
         if serializer.is_valid():
-            user.set_password(serializer.validated_data['password'])
-            user.save()
+            usuario.set_password(serializer.validated_data['password'])
+            usuario.save()
             serializer_token = PasswordResetTokenSerializer(data={'token': f'{token}'})
             if serializer_token.is_valid():
-                user.password_reset_tokens.get(token=token).update(ativo=False)
-            return Response({'status': 'nova senha cadastrada.'})
+                usuario.password_reset_tokens.get(token=token).update(ativo=False)
+            return Response({'status': 'A nova senha foi registrada.'})
 
         return Response(serializer.errors,
                         status=status.HTTP_400_BAD_REQUEST)
 
     @action(detail=True, methods=['patch'])
     def mudar_password(self, request, pk=None):
-        user = self.get_object()
-        serializer = PasswordSerializer(data=request.data)
+        usuario = self.get_object()
+        serializer = CustomUsuarioSerializer(usuario, data=request.data, partial=True)
 
         if serializer.is_valid():
-            if not user.check_password(serializer.data.get('senha_atual')):
-                return Response({'senha_atual': ['Senha incorreta.']},
-                                status=status.HTTP_400_BAD_REQUEST)
-            user.set_password(serializer.data.get('nova_senha'))
-            user.save()
-            return Response({'status': 'nova senha cadastrada.'}, status=status.HTTP_200_OK)
+            serializer.save()
+            return Response({'status': 'A nova senha foi registrada.'}, status=status.HTTP_200_OK)
 
         return Response(serializer.errors,
                         status=status.HTTP_400_BAD_REQUEST)

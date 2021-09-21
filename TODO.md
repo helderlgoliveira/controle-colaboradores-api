@@ -1,6 +1,5 @@
 # TO DO
 
-- Usuarios tem que criar funçao serializer para mudar senha etc [site](obsidian://open?vault=HL's%20vault&file=Pessoais%2FDjango)
 - CRIAR viewset para cargos e departamentos, enderecos etc, e no lugar do destroy o desativar...
 - OVERRIDE create e update para TRANSACSTION.ATOMIC e puxar o create_user do CustomUsuarioManager (confirmar se todos methods username=email)
 - Fazer visualização do municipio serializer 
