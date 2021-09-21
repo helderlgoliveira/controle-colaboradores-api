@@ -78,6 +78,7 @@ class PasswordResetToken(models.Model):
         with transaction.atomic():
             self.token = self.gerar_token()
             super().save(*args, **kwargs)
+            # TODO testar token
             send_mail(
                 f'Criar nova senha - {settings.NOME_DO_PROJETO}',
                 f'Olá, {self.usuario.nome}! \n'

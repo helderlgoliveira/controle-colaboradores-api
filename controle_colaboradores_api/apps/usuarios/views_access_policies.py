@@ -4,7 +4,7 @@ from rest_access_policy import AccessPolicy
 class CustomUsuarioAccessPolicy(AccessPolicy):
     statements = [
         {
-            "action": ["list", "create"],
+            "action": ["list", "create", "ativar", "desativar"],
             "principal": ["group:Administradores"],
             "effect": "allow"
         },

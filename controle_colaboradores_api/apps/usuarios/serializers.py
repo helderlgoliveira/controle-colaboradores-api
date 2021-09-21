@@ -55,21 +55,25 @@ class CustomUsuarioSerializer(serializers.ModelSerializer):
 
     @transaction.atomic
     def create(self, validated_data):
-        usuario = CustomUsuario.objects.create_user(validated_data['email'],
-                                          validated_data['password'])
+        instance = CustomUsuario.objects.create_user(validated_data['email'],
+                                                     validated_data['password'])
         groups = validated_data.pop('groups')
-        for group in groups:
-            usuario.groups.add(group)
-        return usuario
+        instance.groups.set(groups)
+        return instance
 
     @transaction.atomic
     def update(self, instance, validated_data):
-        # TODO continuar daqui:
-        #  pop nova_senha para set_password, e restante
-        #  dar update **validated data ver algumn exemplo nas docs
-        instance.set_password(validated_data.get('nova_senha'))
-        # TODO PasswordResetTokenSerializer
+        if 'nova_senha' in validated_data:
+            nova_senha = validated_data.pop('nova_senha')
+            instance.set_password(nova_senha)
+
+        groups = validated_data.get('groups', instance.groups)
+        instance.groups.set(groups)
+
+        instance.email = validated_data.get('email', instance.email)
+        instance.is_active = validated_data.get('is_active', instance.is_active)
         instance.save()
+
         return instance
 
 
@@ -79,7 +83,8 @@ class PasswordResetTokenSerializer(serializers.ModelSerializer):
         fields = [
             'id',
             'usuario',
-            'token'
+            'token',
+            'ativo'
         ]
         read_only_fields = [
             'id',
@@ -87,7 +92,30 @@ class PasswordResetTokenSerializer(serializers.ModelSerializer):
             'token'
         ]
 
+    def validate(self, data):
+        if "token" in data:
+            token_queryset = PasswordResetToken.objects.filter(usuario=data['usuario'], token=data['token'])
+            token_existe = token_queryset.exists()
+            if not token_existe:
+                raise serializers.ValidationError("Token inválido.")
+            token = token_queryset.get()
+            if not token.ativo:
+                raise serializers.ValidationError("Token inativo (já utilizado ou prazo expirou).")
+            self.instance = token
+        return data
+
     def to_representation(self, instance):
         data = super().to_representation(instance)
         data['usuario'] = CustomUsuarioSerializer(instance.usuario).data
         return data
+
+    @transaction.atomic
+    def create(self, validated_data):
+        instance = PasswordResetToken.objects.create(validated_data['usuario'])
+        return instance
+
+    @transaction.atomic
+    def update(self, instance, validated_data):
+        instance.ativo = validated_data.get('ativo', instance.ativo)
+        instance.save()
+        return instance
