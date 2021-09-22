@@ -1,22 +1,20 @@
+from django.db import transaction
+from django.contrib.auth.models import Group
+
 from rest_framework import mixins, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet, GenericViewSet
-from django.db import transaction
-from django.contrib.auth.models import Group
+from rest_access_policy import AccessViewSetMixin
 
 from .models import CustomUsuario, PasswordResetToken
 from .serializers import GroupSerializer, CustomUsuarioSerializer, PasswordResetTokenSerializer
 from .views_access_policies import GroupAccessPolicy, CustomUsuarioAccessPolicy, PasswordResetTokenAccessPolicy
 
 
-class CustomUsuarioViewSet(ModelViewSet):
-    permission_classes = (CustomUsuarioAccessPolicy,)
+class CustomUsuarioViewSet(AccessViewSetMixin, ModelViewSet):
+    access_policy = CustomUsuarioAccessPolicy
     serializer_class = CustomUsuarioSerializer
-
-    @property
-    def access_policy(self):
-        return self.permission_classes[0]
 
     def get_queryset(self):
         return CustomUsuario.objects.all()
@@ -86,13 +84,9 @@ class CustomUsuarioViewSet(ModelViewSet):
                         status=status.HTTP_400_BAD_REQUEST)
 
 
-class GroupViewSet(ModelViewSet):
-    permission_classes = (GroupAccessPolicy,)
+class GroupViewSet(AccessViewSetMixin, ModelViewSet):
+    access_policy = GroupAccessPolicy
     serializer_class = GroupSerializer
-
-    @property
-    def access_policy(self):
-        return self.permission_classes[0]
 
     def get_queryset(self):
         return Group.objects.all()

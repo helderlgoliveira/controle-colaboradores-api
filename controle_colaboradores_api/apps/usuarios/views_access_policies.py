@@ -29,7 +29,7 @@ class CustomUsuarioAccessPolicy(AccessPolicy):
 class GroupAccessPolicy(AccessPolicy):
     statements = [
         {
-            "action": ["list"],
+            "action": ["list", "retrieve"],
             "principal": ["group:Administradores"],
             "effect": "allow"
         }

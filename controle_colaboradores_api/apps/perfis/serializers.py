@@ -1,7 +1,5 @@
 from rest_framework import serializers
-from drf_writable_nested.serializers import WritableNestedModelSerializer
 
-from controle_colaboradores_api.apps.usuarios.models import CustomUsuario
 from controle_colaboradores_api.apps.usuarios.serializers import CustomUsuarioSerializer
 
 from .models import (
@@ -39,9 +37,9 @@ class EnderecoSerializer(serializers.ModelSerializer):
         ]
         validators = [
             serializers.UniqueTogetherValidator(
-                queryset=model.objects.all(),
+                queryset=model.objects.filter(is_principal=True),
                 fields=('perfil', 'is_principal'),
-                message=("Somente um endereço principal por perfil")
+                message="Somente um endereço principal por perfil."
             )
         ]
 
@@ -106,6 +104,11 @@ class CargoSerializer(serializers.ModelSerializer):
             'modificacao'
         ]
 
+        def validate_salario(self, value):
+            if not value > 0:
+                raise serializers.ValidationError("Valor precisa ser maior que zero.")
+            return value
+
 
 class DepartamentoSerializer(serializers.ModelSerializer):
     class Meta:
@@ -129,16 +132,16 @@ class DepartamentoSerializer(serializers.ModelSerializer):
         ]
 
 
-class PerfilSerializer(WritableNestedModelSerializer):
+class PerfilSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         data = super().to_representation(instance)
         data['usuario'] = CustomUsuarioSerializer(instance.usuario).data
         data['cargos'] = CargoSerializer(instance.cargos.all()).data
         data['departamentos'] = DepartamentoSerializer(instance.departamentos.all()).data
-        data['enderecos'] = DepartamentoSerializer(instance.enderecos.all()).data
-        data['telefones'] = DepartamentoSerializer(instance.telefones.all()).data
-        data['outros_emails'] = DepartamentoSerializer(instance.outros_emails.all()).data
+        data['enderecos'] = EnderecoSerializer(instance.enderecos.all()).data
+        data['telefones'] = TelefoneSerializer(instance.telefones.all()).data
+        data['outros_emails'] = OutroEmailSerializer(instance.outros_emails.all()).data
         return data
 
     class Meta:
@@ -179,5 +182,6 @@ class PerfilSerializer(WritableNestedModelSerializer):
             'usuario_modificacao',
         ]
 
-        # TODO fazer o CREATE e UPDATE para ser ATOMIC
-
+        # TODO Fazer o CREATE e UPDATE - ATOMICCCC:
+        #  Cria USUARIO >passa id> PERFIL(atrela cargos/departamentos) >passa id> endereços,telefones,emails
+        #  Usar os serializers deles para validar os campos deles

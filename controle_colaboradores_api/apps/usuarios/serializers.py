@@ -109,12 +109,10 @@ class PasswordResetTokenSerializer(serializers.ModelSerializer):
         data['usuario'] = CustomUsuarioSerializer(instance.usuario).data
         return data
 
-    @transaction.atomic
     def create(self, validated_data):
         instance = PasswordResetToken.objects.create(validated_data['usuario'])
         return instance
 
-    @transaction.atomic
     def update(self, instance, validated_data):
         instance.ativo = validated_data.get('ativo', instance.ativo)
         instance.save()
