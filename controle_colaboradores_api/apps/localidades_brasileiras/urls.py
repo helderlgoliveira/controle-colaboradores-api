@@ -1,9 +1,6 @@
-from rest_framework.routers import SimpleRouter
+from rest_framework.routers import DefaultRouter
 
 from .views import MunicipioViewSet
 
-router = SimpleRouter()
+router = DefaultRouter()
 router.register(r'municipios', MunicipioViewSet, basename='municipios')
-urlpatterns = router.urls
-
-print(urlpatterns)

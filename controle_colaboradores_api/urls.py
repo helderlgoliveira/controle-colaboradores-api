@@ -15,16 +15,19 @@ Including another URLconf
 """
 
 from django.urls import path, include
+from rest_framework.routers import DefaultRouter
 
-from controle_colaboradores_api.apps.usuarios.urls import urlpatterns as usuarios_urls
-from controle_colaboradores_api.apps.perfis.urls import urlpatterns as perfis_urls
-from controle_colaboradores_api.apps.localidades_brasileiras.urls import urlpatterns as localidades_brasileiras_urls
+from controle_colaboradores_api.apps.usuarios.urls import router as usuarios_router
+from controle_colaboradores_api.apps.perfis.urls import router as perfis_router
+from controle_colaboradores_api.apps.localidades_brasileiras.urls import router as localidades_brasileiras_router
+
+main_router = DefaultRouter()
+
+main_router.registry.extend(usuarios_router.registry)
+main_router.registry.extend(perfis_router.registry)
+main_router.registry.extend(localidades_brasileiras_router.registry)
 
 urlpatterns = [
-    path('api/v1/', include(
-        usuarios_urls +
-        perfis_urls +
-        localidades_brasileiras_urls
-    )),
+    path('api/v1/', include(main_router.urls)),
     path('api/auth/', include('rest_framework.urls', namespace='rest_framework')),
 ]

@@ -6,6 +6,7 @@ from .models import CustomUsuario, PasswordResetToken
 
 
 class GroupSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = Group
         fields = [
@@ -27,7 +28,7 @@ class CustomUsuarioSerializer(serializers.ModelSerializer):
             'id',
             'email',
             'password',
-            'nova_senha'
+            'nova_senha',
             'groups',
             'last_login',
             'is_active'
@@ -42,7 +43,7 @@ class CustomUsuarioSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         data = super().to_representation(instance)
-        data['groups'] = GroupSerializer(instance.groups.all()).data
+        data['groups'] = GroupSerializer(instance.groups.all(), many=True).data
         return data
 
     def validate_password(self, value):

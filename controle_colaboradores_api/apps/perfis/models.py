@@ -36,9 +36,10 @@ class Perfil(BaseParaModelsImportantes):
     dados_bancarios_conta = models.CharField('Dados bancários - Conta', max_length=200, blank=True)
 
     # Cargos, Departamentos e Municípios múltiplos pela possibilidade de acumulação
-    cargos = models.ManyToManyField('Cargo', related_name='perfis')
-    departamentos = models.ManyToManyField('Departamento', related_name='perfis')
-    municipios_onde_trabalha = models.ManyToManyField('localidades_brasileiras.Municipio', related_name='perfis')
+    cargos = models.ManyToManyField('Cargo', related_name='perfis', null=True, blank=True)
+    departamentos = models.ManyToManyField('Departamento', related_name='perfis', null=True, blank=True)
+    municipios_onde_trabalha = models.ManyToManyField('localidades_brasileiras.Municipio', related_name='perfis',
+                                                      null=True, blank=True)
 
     # Mais atributos já existentes via related_name:
     # - telefones (class Telefone)

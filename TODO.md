@@ -1,6 +1,5 @@
 # TO DO
 
-- Criar o create/update do PerfilSerializer
 - Fazer testes
 
 

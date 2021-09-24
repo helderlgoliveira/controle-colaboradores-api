@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
 from controle_colaboradores_api.apps.usuarios.serializers import CustomUsuarioSerializer
+from controle_colaboradores_api.apps.localidades_brasileiras.serializers import MunicipioSerializer
 
 from .models import (
     Perfil,
@@ -12,6 +13,7 @@ from .models import (
 
 
 class EnderecoSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = Endereco
         fields = [
@@ -85,6 +87,7 @@ class OutroEmailSerializer(serializers.ModelSerializer):
 
 
 class CargoSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = Cargo
         fields = [
@@ -111,6 +114,7 @@ class CargoSerializer(serializers.ModelSerializer):
 
 
 class DepartamentoSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = Departamento
         fields = [
@@ -137,11 +141,12 @@ class PerfilSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         data = super().to_representation(instance)
         data['usuario'] = CustomUsuarioSerializer(instance.usuario).data
-        data['cargos'] = CargoSerializer(instance.cargos.all()).data
-        data['departamentos'] = DepartamentoSerializer(instance.departamentos.all()).data
-        data['enderecos'] = EnderecoSerializer(instance.enderecos.all()).data
-        data['telefones'] = TelefoneSerializer(instance.telefones.all()).data
-        data['outros_emails'] = OutroEmailSerializer(instance.outros_emails.all()).data
+        data['cargos'] = CargoSerializer(instance.cargos.all(), many=True).data
+        data['departamentos'] = DepartamentoSerializer(instance.departamentos.all(), many=True).data
+        data['municipios_onde_trabalha'] = MunicipioSerializer(instance.municipios_onde_trabalha.all(), many=True).data
+        data['enderecos'] = EnderecoSerializer(instance.enderecos.all(), many=True).data
+        data['telefones'] = TelefoneSerializer(instance.telefones.all(), many=True).data
+        data['outros_emails'] = OutroEmailSerializer(instance.outros_emails.all(), many=True).data
         return data
 
     class Meta:
@@ -181,7 +186,3 @@ class PerfilSerializer(serializers.ModelSerializer):
             # Fields do model BaseParaModelsImportantes:
             'usuario_modificacao',
         ]
-
-        # TODO Fazer o CREATE e UPDATE - ATOMICCCC:
-        #  Cria USUARIO >passa id> PERFIL(atrela cargos/departamentos) >passa id> endereços,telefones,emails
-        #  Usar os serializers deles para validar os campos deles

@@ -1,7 +1,16 @@
-from rest_framework.routers import SimpleRouter
+from rest_framework.routers import DefaultRouter
 
-from .views import PerfilViewSet
+from .views import (
+    PerfilViewSet,
+    EnderecoViewSet,
+    TelefoneViewSet,
+    CargoViewSet,
+    DepartamentoViewSet
+)
 
-router = SimpleRouter()
+router = DefaultRouter()
 router.register(r'perfis', PerfilViewSet, basename='perfis')
-urlpatterns = router.urls
+router.register(r'enderecos', EnderecoViewSet, basename='enderecos')
+router.register(r'telefones', TelefoneViewSet, basename='telefones')
+router.register(r'cargos', CargoViewSet, basename='cargos')
+router.register(r'departamentos', DepartamentoViewSet, basename='departamentos')
