@@ -4,9 +4,6 @@
 
 
 
-
-
-
 ## Apenas para salvar:
 - [criar usuario com senha via DRF pelo create_user, não create](https://stackoverflow.com/questions/29746584/django-rest-framework-create-user-with-password)
 - [sobre passar context para serializer sem ser via nome de campo](https://www.django-rest-framework.org/api-guide/serializers/#including-extra-context)

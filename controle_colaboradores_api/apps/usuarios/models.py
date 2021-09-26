@@ -1,7 +1,8 @@
 import os
 import binascii
 import random
-from datetime import datetime, timedelta
+from django.utils import timezone
+from datetime import timedelta
 
 from django.db import models, transaction
 from django.core.mail import send_mail
@@ -11,7 +12,7 @@ from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.contrib.auth import get_user_model
 
 
-class UsuarioCustomizadoManager(BaseUserManager):
+class CustomUsuarioManager(BaseUserManager):
     use_in_migrations = True
 
     def _create_user(self, email, password, **extra_fields):
@@ -53,7 +54,7 @@ class CustomUsuario(AbstractUser):
     def __str__(self):
         return self.email
 
-    objects = UsuarioCustomizadoManager()
+    objects = CustomUsuarioManager()
 
 
 class PasswordResetToken(models.Model):
@@ -66,7 +67,7 @@ class PasswordResetToken(models.Model):
     def expirado(self):
         prazo_em_dias = 1
         expiracao = self.criacao + timedelta(days=prazo_em_dias)
-        if datetime.now() > expiracao:
+        if timezone.now() > expiracao:
             return True
         return False
 
@@ -81,7 +82,7 @@ class PasswordResetToken(models.Model):
             # TODO testar token
             send_mail(
                 f'Criar nova senha - {settings.NOME_DO_PROJETO}',
-                f'Olá, {self.usuario.nome}! \n'
+                f'Olá, {self.usuario.perfil.nome}! \n'
                 f'Segue o link para criar a sua nova senha: \n'
                 f'{settings.URL_BASE_CRIAR_NOVA_PASSWORD_APOS_RESETAR_PASSWORD}{self.token}',
                 None,

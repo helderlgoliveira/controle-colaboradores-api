@@ -38,7 +38,7 @@ class Migration(migrations.Migration):
                 'abstract': False,
             },
             managers=[
-                ('objects', controle_colaboradores_api.apps.usuarios.models.UsuarioCustomizadoManager()),
+                ('objects', controle_colaboradores_api.apps.usuarios.models.CustomUsuarioManager()),
             ],
         ),
     ]

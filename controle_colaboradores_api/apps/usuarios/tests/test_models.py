@@ -1,10 +1,30 @@
+from datetime import timedelta
+from django.utils import timezone
+
 import pytest
-# from model_bakery import baker
+from model_bakery import baker
+import controle_colaboradores_api.apps.usuarios.models
+
 
 from controle_colaboradores_api.apps.usuarios.models import CustomUsuario
 
 
-class TestUsuarioCustomizadoManager:
+@pytest.fixture
+def usuario(db):
+    return baker.make('CustomUsuario',
+                      email="helder.lima@dominio.com.br",
+                      perfil__nome="Hélder",
+                      perfil__sobrenome="Lima")
+
+
+@pytest.fixture
+def password_reset_token(db, usuario):
+    return baker.make('PasswordResetToken',
+                      usuario=usuario,
+                      criacao=timezone.now())
+
+
+class TestCustomUsuarioManager:
 
     def test_create_user(self, db):
         novo_usuario = CustomUsuario.objects.create_user(email="helder.lima@dominio.com.br",
@@ -37,3 +57,31 @@ class TestUsuarioCustomizadoManager:
             CustomUsuario.objects.create_superuser(email="email",
                                                    password="senha",
                                                    is_staff=False)
+
+
+class TestCustomUsuario:
+
+    def test_str(self, usuario):
+        assert str(usuario) == "helder.lima@dominio.com.br"
+
+
+class TestPasswordResetToken:
+
+    def test_expirado(self, password_reset_token):
+        assert password_reset_token.expirado is False
+
+        password_reset_token.criacao -= timedelta(days=1)
+        assert password_reset_token.expirado is True
+
+    def test_gerar_token(self, password_reset_token):
+        token_length = len(password_reset_token.gerar_token())
+        assert 40 <= token_length <= 60
+
+    def test_save(self, mocker, password_reset_token):
+        spy = mocker.spy(controle_colaboradores_api.apps.usuarios.models, 'send_mail')
+        password_reset_token.save()
+
+        assert spy.call_count == 1
+        assert spy.spy_return == 1
+
+        assert 40 <= len(password_reset_token.token) <= 60
