@@ -6,7 +6,6 @@ from .models import CustomUsuario, PasswordResetToken
 
 
 class GroupSerializer(serializers.HyperlinkedModelSerializer):
-
     class Meta:
         model = Group
         fields = [
@@ -88,12 +87,14 @@ class PasswordResetTokenSerializer(serializers.ModelSerializer):
         model = PasswordResetToken
         fields = [
             'id',
+            'criacao',
             'usuario',
             'token',
             'ativo'
         ]
         read_only_fields = [
             'id',
+            'criacao',
             'token'
         ]
 
@@ -117,8 +118,14 @@ class PasswordResetTokenSerializer(serializers.ModelSerializer):
         return data
 
     def create(self, validated_data):
-        instance = PasswordResetToken.objects.create(usuario=validated_data['usuario'])
-        return instance
+        tokens_ativos = PasswordResetToken.objects.filter(usuario=validated_data['usuario'],
+                                                          ativo=True)
+        token_pendente = [t for t in tokens_ativos if not t.expirado]
+        if token_pendente:
+            return token_pendente[0]
+
+        novo_token = PasswordResetToken.objects.create(usuario=validated_data['usuario'])
+        return novo_token
 
     def update(self, instance, validated_data):
         instance.ativo = validated_data.get('ativo', instance.ativo)

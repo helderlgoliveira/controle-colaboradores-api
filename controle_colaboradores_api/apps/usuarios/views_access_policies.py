@@ -39,7 +39,7 @@ class GroupAccessPolicy(AccessPolicy):
 class PasswordResetTokenAccessPolicy(AccessPolicy):
     statements = [
         {
-            "action": ["list"],
+            "action": ["list", "retrieve"],
             "principal": ["admin"],
             "effect": "allow"
         },

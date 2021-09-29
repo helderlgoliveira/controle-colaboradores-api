@@ -1,7 +1,5 @@
 # TO DO
 
-- Ver erro para desativar/ativar usuarios etc. Testar put, patch etc de cada endpoint.
-
 - Fazer testes DRF agora:
 - https://dev.to/sherlockcodes/pytest-with-django-rest-framework-from-zero-to-hero-8c4
 

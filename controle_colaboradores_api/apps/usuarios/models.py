@@ -76,16 +76,19 @@ class PasswordResetToken(models.Model):
         return binascii.hexlify(os.urandom(length)).decode()[0:length]
 
     def save(self, *args, **kwargs):
-        with transaction.atomic():
-            self.token = self.gerar_token()
+        if self._state.adding:
+            with transaction.atomic():
+                self.token = self.gerar_token()
+                super().save(*args, **kwargs)
+
+                send_mail(
+                    f'Criar nova senha - {settings.NOME_DO_PROJETO}',
+                    f'Olá, {self.usuario.perfil.nome}! \n'
+                    f'Segue o link para criar a sua nova senha: \n'
+                    f'{settings.URL_BASE_CRIAR_NOVA_PASSWORD_APOS_RESETAR_PASSWORD}{self.token}',
+                    None,
+                    [self.usuario.email],
+                    fail_silently=False,
+                )
+        else:
             super().save(*args, **kwargs)
-            # TODO testar token - ADICIONAR IF CREATED
-            send_mail(
-                f'Criar nova senha - {settings.NOME_DO_PROJETO}',
-                f'Olá, {self.usuario.perfil.nome}! \n'
-                f'Segue o link para criar a sua nova senha: \n'
-                f'{settings.URL_BASE_CRIAR_NOVA_PASSWORD_APOS_RESETAR_PASSWORD}{self.token}',
-                None,
-                [self.usuario.email],
-                fail_silently=False,
-            )
