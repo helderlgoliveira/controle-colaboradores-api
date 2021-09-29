@@ -38,6 +38,7 @@ class CustomUsuarioViewSet(AccessViewSetMixin, ModelViewSet):
         if serializer.is_valid():
             serializer.save()
 
+        # TODO AQUI GET O TOKEN E PASSAR COMO PARAM
         serializer_token = PasswordResetTokenSerializer(data={'usuario': f'{usuario.pk}', 'token': f'{token}'},
                                                         partial=True)
         if serializer_token.is_valid():
@@ -57,6 +58,18 @@ class CustomUsuarioViewSet(AccessViewSetMixin, ModelViewSet):
         if serializer.is_valid():
             serializer.save()
             return Response({'status': 'A nova senha foi registrada.'}, status=status.HTTP_200_OK)
+
+        return Response(serializer.errors,
+                        status=status.HTTP_400_BAD_REQUEST)
+
+    @action(detail=True, methods=['patch'])
+    def mudar_email(self, request, pk=None):
+        usuario = self.get_object()
+        serializer = CustomUsuarioSerializer(usuario, data=request.data, partial=True)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response({'status': 'O e-mail foi alterado com sucesso.'}, status=status.HTTP_200_OK)
 
         return Response(serializer.errors,
                         status=status.HTTP_400_BAD_REQUEST)
@@ -92,16 +105,10 @@ class GroupViewSet(AccessViewSetMixin, ModelViewSet):
         return Group.objects.all()
 
 
-class PasswordResetTokenViewSet(mixins.CreateModelMixin,
-                                mixins.RetrieveModelMixin,
-                                mixins.UpdateModelMixin,
-                                GenericViewSet):
-    permission_classes = (PasswordResetTokenAccessPolicy,)
+class PasswordResetTokenViewSet(AccessViewSetMixin,
+                                ModelViewSet):
+    access_policy = PasswordResetTokenAccessPolicy
     serializer_class = PasswordResetTokenSerializer
-
-    @property
-    def access_policy(self):
-        return self.permission_classes[0]
 
     def get_queryset(self):
         return PasswordResetToken.objects.all()

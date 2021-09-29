@@ -9,8 +9,8 @@ from .views import (
 )
 
 router = DefaultRouter()
-router.register(r'perfis', PerfilViewSet, basename='perfis')
-router.register(r'enderecos', EnderecoViewSet, basename='enderecos')
-router.register(r'telefones', TelefoneViewSet, basename='telefones')
-router.register(r'cargos', CargoViewSet, basename='cargos')
-router.register(r'departamentos', DepartamentoViewSet, basename='departamentos')
+router.register(r'perfis', PerfilViewSet, basename='perfil')
+router.register(r'enderecos', EnderecoViewSet, basename='endereco')
+router.register(r'telefones', TelefoneViewSet, basename='telefone')
+router.register(r'cargos', CargoViewSet, basename='cargo')
+router.register(r'departamentos', DepartamentoViewSet, basename='departamento')

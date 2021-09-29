@@ -58,7 +58,7 @@ class CustomUsuario(AbstractUser):
 
 
 class PasswordResetToken(models.Model):
-    usuario = models.OneToOneField(get_user_model(), related_name="password_reset_tokens", on_delete=models.CASCADE)
+    usuario = models.ForeignKey(get_user_model(), related_name="password_reset_tokens", on_delete=models.CASCADE)
     token = models.CharField('Token', unique=True, max_length=64, db_index=True)
     criacao = models.DateTimeField('Criação', auto_now_add=True)
     ativo = models.BooleanField('Ativo', default=True)
@@ -79,7 +79,7 @@ class PasswordResetToken(models.Model):
         with transaction.atomic():
             self.token = self.gerar_token()
             super().save(*args, **kwargs)
-            # TODO testar token
+            # TODO testar token - ADICIONAR IF CREATED
             send_mail(
                 f'Criar nova senha - {settings.NOME_DO_PROJETO}',
                 f'Olá, {self.usuario.perfil.nome}! \n'

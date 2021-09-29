@@ -3,8 +3,6 @@ from django.utils import timezone
 
 import pytest
 from model_bakery import baker
-import controle_colaboradores_api.apps.usuarios.models
-
 
 from controle_colaboradores_api.apps.usuarios.models import CustomUsuario
 

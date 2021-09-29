@@ -1,3 +1,5 @@
+import re
+
 from rest_framework import serializers
 
 from controle_colaboradores_api.apps.usuarios.serializers import CustomUsuarioSerializer
@@ -12,11 +14,18 @@ from .models import (
     Departamento)
 
 
-class EnderecoSerializer(serializers.ModelSerializer):
+class EnderecoSerializer(serializers.HyperlinkedModelSerializer):
+
+    def validate_cep(self, value):
+        cep_pattern = re.compile(r"^\d{5}-\d{3}$")
+        if not cep_pattern.match(value):
+            raise serializers.ValidationError("CEP inválido. Informe no formato: 57000-000")
+        return value
 
     class Meta:
         model = Endereco
         fields = [
+            'url',
             # Fields do model Base:
             'id',
             'criacao',
@@ -46,10 +55,19 @@ class EnderecoSerializer(serializers.ModelSerializer):
         ]
 
 
-class TelefoneSerializer(serializers.ModelSerializer):
+class TelefoneSerializer(serializers.HyperlinkedModelSerializer):
+
+    def validate_numero(self, value):
+        numero_pattern = re.compile(r"^\(\d{2}\)\s\d{4,5}-\d{4}$")
+        if not numero_pattern.match(value):
+            raise serializers.ValidationError("Número inválido. Informe no formato:"
+                                              "(DD) 0000-0000 ou (DD) 90000-0000")
+        return value
+
     class Meta:
         model = Telefone
         fields = [
+            'url',
             # Fields do model Base:
             'id',
             'criacao',
@@ -66,10 +84,12 @@ class TelefoneSerializer(serializers.ModelSerializer):
         ]
 
 
-class OutroEmailSerializer(serializers.ModelSerializer):
+class OutroEmailSerializer(serializers.HyperlinkedModelSerializer):
+
     class Meta:
         model = OutroEmail
         fields = [
+            'url',
             # Fields do model Base:
             'id',
             'criacao',
@@ -86,11 +106,17 @@ class OutroEmailSerializer(serializers.ModelSerializer):
         ]
 
 
-class CargoSerializer(serializers.ModelSerializer):
+class CargoSerializer(serializers.HyperlinkedModelSerializer):
+
+    def validate_salario(self, value):
+        if not value > 0:
+            raise serializers.ValidationError("Valor precisa ser maior que zero.")
+        return value
 
     class Meta:
         model = Cargo
         fields = [
+            'url',
             # Fields do model Base:
             'id',
             'criacao',
@@ -107,17 +133,41 @@ class CargoSerializer(serializers.ModelSerializer):
             'modificacao'
         ]
 
-        def validate_salario(self, value):
-            if not value > 0:
-                raise serializers.ValidationError("Valor precisa ser maior que zero.")
-            return value
 
+class DepartamentoSerializer(serializers.HyperlinkedModelSerializer):
 
-class DepartamentoSerializer(serializers.ModelSerializer):
+    def to_representation(self, instance):
+        request = self.context['request']
+        data = super().to_representation(instance)
+        if data['departamento_superior']:
+            data['departamento_superior'] = DepartamentoSerializer(instance.departamento_superior,
+                                                                   context={'request': request}).data
+        return data
+
+    def validate(self, data):
+
+        if 'departamento_superior' in data:
+            if self.instance.id == data['departamento_superior'].id:
+                raise serializers.ValidationError("O departamento superior não pode "
+                                                  "ser o próprio departamento.")
+        if 'diretor' in data:
+            if data['diretor'] == self.instance.diretor_substituto:
+                raise serializers.ValidationError("O diretor titular e o substituto não podem ser a mesma pessoa.")
+
+        if 'diretor_substituto' in data:
+            if data['diretor_substituto'] == self.instance.diretor:
+                raise serializers.ValidationError("O diretor titular e o substituto não podem ser a mesma pessoa.")
+
+        if all(k in data for k in ("diretor", "diretor_substituto")):
+            if data['diretor'] == data['diretor_substituto']:
+                raise serializers.ValidationError("O diretor titular e o substituto não podem ser a mesma pessoa.")
+
+        return data
 
     class Meta:
         model = Departamento
         fields = [
+            'url',
             # Fields do model Base:
             'id',
             'criacao',
@@ -136,22 +186,45 @@ class DepartamentoSerializer(serializers.ModelSerializer):
         ]
 
 
-class PerfilSerializer(serializers.ModelSerializer):
+class PerfilSerializer(serializers.HyperlinkedModelSerializer):
 
     def to_representation(self, instance):
+        request = self.context['request']
         data = super().to_representation(instance)
-        data['usuario'] = CustomUsuarioSerializer(instance.usuario).data
-        data['cargos'] = CargoSerializer(instance.cargos.all(), many=True).data
-        data['departamentos'] = DepartamentoSerializer(instance.departamentos.all(), many=True).data
-        data['municipios_onde_trabalha'] = MunicipioSerializer(instance.municipios_onde_trabalha.all(), many=True).data
-        data['enderecos'] = EnderecoSerializer(instance.enderecos.all(), many=True).data
-        data['telefones'] = TelefoneSerializer(instance.telefones.all(), many=True).data
-        data['outros_emails'] = OutroEmailSerializer(instance.outros_emails.all(), many=True).data
+        data['usuario'] = CustomUsuarioSerializer(instance.usuario,
+                                                  context={'request': request}).data
+        data['usuario_modificacao'] = CustomUsuarioSerializer(instance.usuario_modificacao,
+                                                              context={'request': request}).data
+        data['cargos'] = CargoSerializer(instance.cargos.all(),
+                                         many=True,
+                                         context={'request': self.context['request']}).data
+        data['departamentos'] = DepartamentoSerializer(instance.departamentos.all(),
+                                                       many=True,
+                                                       context={'request': request}).data
+        data['diretor_em'] = DepartamentoSerializer(instance.diretor_em.all(),
+                                                    many=True,
+                                                    context={'request': request}).data
+        data['diretor_substituto_em'] = DepartamentoSerializer(instance.diretor_substituto_em.all(),
+                                                               many=True,
+                                                               context={'request': request}).data
+        data['municipios_onde_trabalha'] = MunicipioSerializer(instance.municipios_onde_trabalha.all(),
+                                                               many=True,
+                                                               context={'request': request}).data
+        data['enderecos'] = EnderecoSerializer(instance.enderecos.all(),
+                                               many=True,
+                                               context={'request': request}).data
+        data['telefones'] = TelefoneSerializer(instance.telefones.all(),
+                                               many=True,
+                                               context={'request': request}).data
+        data['outros_emails'] = OutroEmailSerializer(instance.outros_emails.all(),
+                                                     many=True,
+                                                     context={'request': request}).data
         return data
 
     class Meta:
         model = Perfil
         fields = [
+            'url',
             # Fields do model Base:
             'id',
             'criacao',
@@ -171,9 +244,11 @@ class PerfilSerializer(serializers.ModelSerializer):
             'dados_bancarios_agencia',
             'dados_bancarios_conta',
             'cargos',
-            'departamentos',
             'municipios_onde_trabalha',
+            'departamentos',
             # Fields de related_names:
+            'diretor_em',
+            'diretor_substituto_em',
             'enderecos',
             'telefones',
             'outros_emails'

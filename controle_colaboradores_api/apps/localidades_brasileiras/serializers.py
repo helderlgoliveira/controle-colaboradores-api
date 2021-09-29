@@ -22,11 +22,18 @@ class UnidadeFederativaSerializer(serializers.ModelSerializer):
 
 
 class MunicipioSerializer(serializers.ModelSerializer):
-    uf = UnidadeFederativaSerializer()
+
+    def to_representation(self, instance):
+        request = self.context['request']
+        data = super().to_representation(instance)
+        data['uf'] = UnidadeFederativaSerializer(instance.uf,
+                                                 context={'request': request}).data
+        return data
 
     class Meta:
         model = Municipio
         fields = [
+            'url',
             'id',
             'nome',
             'cod_ibge',

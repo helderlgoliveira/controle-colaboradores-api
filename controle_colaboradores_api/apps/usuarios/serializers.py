@@ -5,11 +5,12 @@ from django.contrib.auth.models import Group
 from .models import CustomUsuario, PasswordResetToken
 
 
-class GroupSerializer(serializers.ModelSerializer):
+class GroupSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Group
         fields = [
+            'url',
             'id',
             'name'
         ]
@@ -19,12 +20,13 @@ class GroupSerializer(serializers.ModelSerializer):
         ]
 
 
-class CustomUsuarioSerializer(serializers.ModelSerializer):
+class CustomUsuarioSerializer(serializers.HyperlinkedModelSerializer):
     nova_senha = serializers.CharField(required=False)
 
     class Meta:
         model = CustomUsuario
         fields = [
+            'url',
             'id',
             'email',
             'password',
@@ -42,8 +44,11 @@ class CustomUsuarioSerializer(serializers.ModelSerializer):
         }
 
     def to_representation(self, instance):
+        request = self.context['request']
         data = super().to_representation(instance)
-        data['groups'] = GroupSerializer(instance.groups.all(), many=True).data
+        data['groups'] = GroupSerializer(instance.groups.all(),
+                                         many=True,
+                                         context={'request': request}).data
         return data
 
     def validate_password(self, value):
@@ -68,7 +73,7 @@ class CustomUsuarioSerializer(serializers.ModelSerializer):
             nova_senha = validated_data.pop('nova_senha')
             instance.set_password(nova_senha)
 
-        groups = validated_data.get('groups', instance.groups)
+        groups = validated_data.get('groups', instance.groups.all())
         instance.groups.set(groups)
 
         instance.email = validated_data.get('email', instance.email)
@@ -89,7 +94,6 @@ class PasswordResetTokenSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = [
             'id',
-            'usuario',
             'token'
         ]
 
@@ -106,12 +110,14 @@ class PasswordResetTokenSerializer(serializers.ModelSerializer):
         return data
 
     def to_representation(self, instance):
+        request = self.context['request']
         data = super().to_representation(instance)
-        data['usuario'] = CustomUsuarioSerializer(instance.usuario).data
+        data['usuario'] = CustomUsuarioSerializer(instance.usuario,
+                                                  context={'request': request}).data
         return data
 
     def create(self, validated_data):
-        instance = PasswordResetToken.objects.create(validated_data['usuario'])
+        instance = PasswordResetToken.objects.create(usuario=validated_data['usuario'])
         return instance
 
     def update(self, instance, validated_data):

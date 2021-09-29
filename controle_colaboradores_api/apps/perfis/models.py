@@ -36,10 +36,11 @@ class Perfil(BaseParaModelsImportantes):
     dados_bancarios_conta = models.CharField('Dados bancários - Conta', max_length=200, blank=True)
 
     # Cargos, Departamentos e Municípios múltiplos pela possibilidade de acumulação
-    cargos = models.ManyToManyField('Cargo', related_name='perfis', null=True, blank=True)
-    departamentos = models.ManyToManyField('Departamento', related_name='perfis', null=True, blank=True)
-    municipios_onde_trabalha = models.ManyToManyField('localidades_brasileiras.Municipio', related_name='perfis',
-                                                      null=True, blank=True)
+    cargos = models.ManyToManyField('Cargo', related_name='perfis', blank=True)
+    departamentos = models.ManyToManyField('Departamento', related_name='perfis', blank=True)
+    municipios_onde_trabalha = models.ManyToManyField('localidades_brasileiras.Municipio',
+                                                      related_name='perfis',
+                                                      blank=True)
 
     # Mais atributos já existentes via related_name:
     # - telefones (class Telefone)
@@ -136,12 +137,12 @@ class Cargo(Base):
 
 
 class Departamento(Base):
-    nome = models.CharField('Nome', max_length=100)
-    diretor = models.ForeignKey(get_user_model(),
+    nome = models.CharField('Nome', unique=True, max_length=100)
+    diretor = models.ForeignKey(Perfil,
                                 verbose_name="Diretor do departamento",
                                 on_delete=models.RESTRICT,
                                 related_name="diretor_em")
-    diretor_substituto = models.ForeignKey(get_user_model(),
+    diretor_substituto = models.ForeignKey(Perfil,
                                            verbose_name="Diretor substituto do departamento",
                                            on_delete=models.RESTRICT,
                                            null=True,

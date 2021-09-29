@@ -4,12 +4,12 @@ from rest_access_policy import AccessPolicy
 class CustomUsuarioAccessPolicy(AccessPolicy):
     statements = [
         {
-            "action": ["list", "create", "ativar", "desativar"],
+            "action": ["list", "retrieve", "create", "ativar", "desativar"],
             "principal": ["group:Administradores"],
             "effect": "allow"
         },
         {
-            "action": ["retrieve", "update", "partial_update", "mudar_password"],
+            "action": ["retrieve", "mudar_email", "mudar_password"],
             "principal": ["*"],
             "effect": "allow",
             "condition": "is_owner"
@@ -38,6 +38,11 @@ class GroupAccessPolicy(AccessPolicy):
 
 class PasswordResetTokenAccessPolicy(AccessPolicy):
     statements = [
+        {
+            "action": ["list"],
+            "principal": ["admin"],
+            "effect": "allow"
+        },
         {
             "action": ["create", "update", "partial_update"],
             "principal": ["*"],
