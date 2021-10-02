@@ -4,7 +4,9 @@ from rest_access_policy import AccessPolicy
 class CustomUsuarioAccessPolicy(AccessPolicy):
     statements = [
         {
-            "action": ["list", "retrieve", "create", "ativar", "desativar"],
+            "action": ["list", "retrieve",
+                       "create", "mudar_grupo",
+                       "ativar", "desativar"],
             "principal": ["group:Administradores"],
             "effect": "allow"
         },
@@ -15,7 +17,7 @@ class CustomUsuarioAccessPolicy(AccessPolicy):
             "condition": "is_owner"
         },
         {
-            "action": ["criar_nova_password_apos_reset"],
+            "action": ["mudar_password_apos_reset"],
             "principal": ["*"],
             "effect": "allow"
         }

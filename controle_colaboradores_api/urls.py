@@ -37,18 +37,22 @@ schema_view = get_schema_view(
    permission_classes=(permissions.AllowAny,),
 )
 
+api_docs_urlpatterns = [
+   re_path(r'^swagger(?P<format>\.json|\.yaml)$', schema_view.without_ui(cache_timeout=0), name='schema-json'),
+   re_path(r'^swagger/$', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
+   re_path(r'^redoc/$', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc')
+]
 
 main_router = DefaultRouter()
 
 main_router.registry.extend(usuarios_router.registry)
 main_router.registry.extend(perfis_router.registry)
 main_router.registry.extend(localidades_brasileiras_router.registry)
+main_router.registry.extend(localidades_brasileiras_router.registry)
+
+api_v1 = main_router.urls + api_docs_urlpatterns
 
 urlpatterns = [
-   path('api/v1/', include(main_router.urls)),
-   path('api/auth/', include('rest_framework.urls', namespace='rest_framework')),
-
-   re_path(r'^swagger(?P<format>\.json|\.yaml)$', schema_view.without_ui(cache_timeout=0), name='schema-json'),
-   re_path(r'^swagger/$', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
-   re_path(r'^redoc/$', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
+   path('api/v1/', include(api_v1)),
+   path('api/auth/', include('rest_framework.urls', namespace='rest_framework'))
 ]

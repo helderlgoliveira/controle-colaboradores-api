@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from django.db import transaction
 from django.contrib.auth.models import Group
+from django.contrib.auth.password_validation import validate_password
 
 from .models import CustomUsuario, PasswordResetToken
 
@@ -20,7 +21,6 @@ class GroupSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class CustomUsuarioSerializer(serializers.HyperlinkedModelSerializer):
-    nova_senha = serializers.CharField(required=False)
 
     class Meta:
         model = CustomUsuario
@@ -29,14 +29,10 @@ class CustomUsuarioSerializer(serializers.HyperlinkedModelSerializer):
             'id',
             'email',
             'password',
-            'nova_senha',
             'groups',
-            'last_login',
-            'is_active'
         ]
         read_only_fields = [
             'id',
-            'last_login'
         ]
         extra_kwargs = {
             'password': {'write_only': True}
@@ -51,11 +47,7 @@ class CustomUsuarioSerializer(serializers.HyperlinkedModelSerializer):
         return data
 
     def validate_password(self, value):
-        usuario = getattr(self, 'instance', None)
-        if usuario is not None:
-            senha_atual_confirmada = usuario.check_password(value)
-            if not senha_atual_confirmada:
-                raise serializers.ValidationError("Senha incorreta.")
+        validate_password(value)
         return value
 
     @transaction.atomic
@@ -66,25 +58,134 @@ class CustomUsuarioSerializer(serializers.HyperlinkedModelSerializer):
         instance.groups.set(groups)
         return instance
 
-    @transaction.atomic
+
+class CustomUsuarioMudarPasswordSerializer(serializers.ModelSerializer):
+    nova_senha = serializers.CharField(min_length=8)
+
+    def validate_password(self, value):
+        senha_atual_confirmada = self.instance.check_password(value)
+        if not senha_atual_confirmada:
+            raise serializers.ValidationError("Senha atual incorreta.")
+        return value
+
+    def validate_nova_senha(self, value):
+        validate_password(value)
+        return value
+
     def update(self, instance, validated_data):
-        if 'nova_senha' in validated_data:
-            nova_senha = validated_data.pop('nova_senha')
-            instance.set_password(nova_senha)
-
-        groups = validated_data.get('groups', instance.groups.all())
-        instance.groups.set(groups)
-
-        instance.email = validated_data.get('email', instance.email)
-        instance.is_active = validated_data.get('is_active', instance.is_active)
+        nova_senha = validated_data.pop('nova_senha')
+        instance.set_password(nova_senha)
         instance.save()
-
         return instance
 
+    class Meta:
+        model = CustomUsuario
+        fields = [
+            'id',
+            'password',
+            'nova_senha',
+        ]
+        read_only_fields = [
+            'id'
+        ]
+        extra_kwargs = {
+            'password': {'write_only': True},
+            'nova_senha': {'write_only': True}
+        }
 
-class CustomUsuarioMudarPasswordSerializer(serializers.HyperlinkedModelSerializer):
-    nova_senha = serializers.CharField(required=False)
-    # TODO continuar
+
+class CustomUsuarioMudarPasswordAposResetSerializer(serializers.ModelSerializer):
+    nova_senha = serializers.CharField(min_length=8)
+
+    def validate_nova_senha(self, value):
+        validate_password(value)
+        return value
+
+    def update(self, instance, validated_data):
+        nova_senha = validated_data['nova_senha']
+        instance.set_password(nova_senha)
+        instance.save()
+        return instance
+
+    class Meta:
+        model = CustomUsuario
+        fields = [
+            'id',
+            'nova_senha',
+        ]
+        read_only_fields = [
+            'id'
+        ]
+        extra_kwargs = {
+            'nova_senha': {'write_only': True}
+        }
+
+
+class CustomUsuarioMudarEmailSerializer(serializers.ModelSerializer):
+
+    def update(self, instance, validated_data):
+        instance.email(validated_data['email'])
+        instance.save()
+        return instance
+
+    class Meta:
+        model = CustomUsuario
+        fields = [
+            'id',
+            'email',
+        ]
+        read_only_fields = [
+            'id'
+        ]
+
+
+class CustomUsuarioMudarGrupoSerializer(serializers.ModelSerializer):
+
+    def validate_groups(self, value):
+        if value not in Group.objects.all():
+            raise serializers.ValidationError("Grupo inexistente.")
+        return value
+
+    @transaction.atomic
+    def update(self, instance, validated_data):
+        groups = validated_data['groups']
+        instance.groups.set(groups)
+        instance.save()
+        return instance
+
+    class Meta:
+        model = CustomUsuario
+        fields = [
+            'id',
+            'groups',
+        ]
+        read_only_fields = [
+            'id'
+        ]
+        extra_kwargs = {
+            'groups': {'required': True}
+        }
+
+
+class CustomUsuarioMudarAtivacaoSerializer(serializers.ModelSerializer):
+
+    @transaction.atomic
+    def update(self, instance, validated_data):
+        status_ativacao = validated_data['is_active']
+        instance.is_active = status_ativacao
+        instance.save()
+        return instance
+
+    class Meta:
+        model = CustomUsuario
+        fields = [
+            'id',
+            'is_active'
+        ]
+        read_only_fields = [
+            'id'
+        ]
+
 
 class PasswordResetTokenSerializer(serializers.ModelSerializer):
     class Meta:
