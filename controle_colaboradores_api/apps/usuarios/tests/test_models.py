@@ -4,6 +4,7 @@ from django.utils import timezone
 import pytest
 from model_bakery import baker
 
+import controle_colaboradores_api.apps.usuarios.models
 from controle_colaboradores_api.apps.usuarios.models import CustomUsuario
 
 
@@ -75,11 +76,21 @@ class TestPasswordResetToken:
         token_length = len(password_reset_token.gerar_token())
         assert 40 <= token_length <= 60
 
-    def test_save(self, mocker, password_reset_token):
+    def test_save(self, mocker):
         spy = mocker.spy(controle_colaboradores_api.apps.usuarios.models, 'send_mail')
-        password_reset_token.save()
 
+        usuario = baker.make('CustomUsuario',
+                             email="fulano@dominio.com.br",
+                             perfil__nome="Fulano",
+                             perfil__sobrenome="Tal",
+                             perfil__cpf="000.000.000-00")
+        token_instance = baker.make('PasswordResetToken', usuario=usuario)
         assert spy.call_count == 1
         assert spy.spy_return == 1
+        assert 40 <= len(token_instance.token) <= 60
 
-        assert 40 <= len(password_reset_token.token) <= 60
+        # Test save quando update
+        token_instance.save()
+        assert spy.call_count == 1  # Permanece igual, porque update não chama o method
+
+

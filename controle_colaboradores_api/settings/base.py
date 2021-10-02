@@ -38,6 +38,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
 
+    'drf_yasg',
+
     'controle_colaboradores_api.apps.localidades_brasileiras',
     'controle_colaboradores_api.apps.usuarios',
     'controle_colaboradores_api.apps.perfis',

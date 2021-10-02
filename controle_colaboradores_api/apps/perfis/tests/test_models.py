@@ -57,7 +57,7 @@ def cargo(db, perfil):
 def departamento(db, perfil):
     return baker.make('Departamento',
                       nome="Diretoria de TI",
-                      diretor=perfil.usuario)
+                      diretor=perfil)
 
 
 class TestPerfil:

@@ -1,13 +1,23 @@
 # TO DO
 
-- Fazer testes DRF agora:
-- https://dev.to/sherlockcodes/pytest-with-django-rest-framework-from-zero-to-hero-8c4
+1) definir serializers para cada action extra formato: NomemodelActionSerializer
 
+2) Documentar API no WEBAPI ver como colocar detalhes.
+
+3) Validate diretor if instance dirsub diferente 
+Validate diretor substituto if instance dir diferente
+Mas os individuais acima Funcionam se for post? Fazer if self.instance??
+Validade() juntos if data os dois
+
+4) Fazer testes DRF olhar site do DRF e se esse ta atualizado:
+https://dev.to/sherlockcodes/pytest-with-django-rest-framework-from-zero-to-hero-8c4
 
 
 
 
 ## Apenas para salvar:
+
+- [Definir qual Serializer chamar baseado nas actions](https://medium.com/aubergine-solutions/decide-serializer-class-dynamically-based-on-viewset-actions-in-django-rest-framework-drf-fb6bb1246af2)
 - [criar usuario com senha via DRF pelo create_user, não create](https://stackoverflow.com/questions/29746584/django-rest-framework-create-user-with-password)
 - [sobre passar context para serializer sem ser via nome de campo](https://www.django-rest-framework.org/api-guide/serializers/#including-extra-context)
 - [10 itens importantes DRF](https://profil-software.com/blog/development/10-things-you-need-know-effectively-use-django-rest-framework/)

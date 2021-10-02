@@ -82,6 +82,10 @@ class CustomUsuarioSerializer(serializers.HyperlinkedModelSerializer):
         return instance
 
 
+class CustomUsuarioMudarPasswordSerializer(serializers.HyperlinkedModelSerializer):
+    nova_senha = serializers.CharField(required=False)
+    # TODO continuar
+
 class PasswordResetTokenSerializer(serializers.ModelSerializer):
     class Meta:
         model = PasswordResetToken

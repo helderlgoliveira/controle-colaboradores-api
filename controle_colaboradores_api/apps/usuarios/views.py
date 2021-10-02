@@ -52,6 +52,9 @@ class CustomUsuarioViewSet(AccessViewSetMixin, ModelViewSet):
 
     @action(detail=True, methods=['patch'])
     def mudar_password(self, request, pk=None):
+        """
+        Muda a senha do usuário.
+        """
         usuario = self.get_object()
         serializer = CustomUsuarioSerializer(usuario, data=request.data, partial=True)
 

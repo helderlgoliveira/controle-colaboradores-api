@@ -188,6 +188,12 @@ class DepartamentoSerializer(serializers.HyperlinkedModelSerializer):
 
 class PerfilSerializer(serializers.HyperlinkedModelSerializer):
 
+    def validate_cpf(self, value):
+        cpf_pattern = re.compile(r"^\d{3}\.\d{3}\.\d{3}-\d{2}$")
+        if not cpf_pattern.match(value):
+            raise serializers.ValidationError("CPF inválido. Informe no formato: 000.000.000-00")
+        return value
+
     def to_representation(self, instance):
         request = self.context['request']
         data = super().to_representation(instance)
