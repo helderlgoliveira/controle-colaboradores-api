@@ -1,13 +1,9 @@
 # TO DO
 
-VER SE O SWAGGER BATE COM AS ACTIONS DO  ACCESS POLICY
+1) VER SE O SWAGGER BATE COM AS ACTIONS DO  ACCESS POLICY
 
-docstringrs para os viewsets dos apps
+2) docstringrs para os viewsets dos apps
 
-
-1) definir serializers para cada action extra formato: NomemodelActionSerializer
-
-2) Documentar API no WEBAPI ver como colocar detalhes.
 
 3) Validate diretor if instance dirsub diferente 
 Validate diretor substituto if instance dir diferente

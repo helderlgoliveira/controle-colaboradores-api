@@ -1,5 +1,7 @@
 from django.db import transaction
 from django.contrib.auth.models import Group
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
 
 from rest_framework import status, mixins
 from rest_framework.decorators import action
@@ -20,7 +22,6 @@ from .serializers import (
 )
 from .views_access_policies import GroupAccessPolicy, CustomUsuarioAccessPolicy, PasswordResetTokenAccessPolicy
 
-
 class CustomUsuarioViewSet(AccessViewSetMixin,
                            mixins.CreateModelMixin,
                            mixins.RetrieveModelMixin,
@@ -38,6 +39,11 @@ class CustomUsuarioViewSet(AccessViewSetMixin,
     def perform_update(self, serializer):
         serializer.save(usuario_modificacao=self.request.user)
 
+    @swagger_auto_schema(method='patch',
+                         manual_parameters=[openapi.Parameter('token',
+                                                              openapi.IN_QUERY,
+                                                              type=openapi.TYPE_STRING,
+                                                              required=True)])
     @transaction.atomic
     @action(detail=True, methods=['patch'], serializer_class=CustomUsuarioMudarPasswordAposResetSerializer)
     def mudar_password_apos_reset(self, request, pk=None):

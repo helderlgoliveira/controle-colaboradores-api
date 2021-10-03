@@ -138,6 +138,7 @@ LOGOUT_REDIRECT_URL = 'api-root'
 # DRF - Django Rest Framwork
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.BasicAuthentication',
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.TokenAuthentication',
     ),
@@ -158,7 +159,7 @@ REST_FRAMEWORK = {
 
 # Swagger - Documentação on-line da API
 SWAGGER_SETTINGS = {
-    'USE_SESSION_AUTH': True,
+    'USE_SESSION_AUTH': False,  # True caso desejar login pelas urls do DRF
     'LOGIN_URL': 'rest_framework:login',
     'LOGOUT_URL': 'rest_framework:logout'
 }

@@ -200,7 +200,7 @@ class PasswordResetTokenSerializer(serializers.ModelSerializer):
         read_only_fields = [
             'id',
             'criacao',
-            'token'
+            'token',
         ]
 
     def validate(self, data):
