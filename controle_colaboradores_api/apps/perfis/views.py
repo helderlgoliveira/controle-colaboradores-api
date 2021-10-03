@@ -1,6 +1,8 @@
-from rest_framework.viewsets import ModelViewSet
+from rest_framework import mixins, status
+from rest_framework.viewsets import ModelViewSet, GenericViewSet
+from rest_framework.response import Response
+from rest_framework.decorators import action
 from rest_access_policy import AccessViewSetMixin
-
 
 from .models import (
     Perfil,
@@ -16,7 +18,9 @@ from .serializers import (
     TelefoneSerializer,
     OutroEmailSerializer,
     CargoSerializer,
-    DepartamentoSerializer
+    CargoMudarAtivacaoSerializer,
+    DepartamentoSerializer,
+    DepartamentoMudarAtivacaoSerializer
 )
 from .views_access_policies import (
     PerfilAccessPolicy,
@@ -26,7 +30,15 @@ from .views_access_policies import (
 )
 
 
-class PerfilViewSet(AccessViewSetMixin, ModelViewSet):
+class PerfilViewSet(AccessViewSetMixin,
+                    mixins.CreateModelMixin,
+                    mixins.RetrieveModelMixin,
+                    mixins.UpdateModelMixin,
+                    mixins.ListModelMixin,
+                    GenericViewSet):
+    """
+    Gerenciar os perfis dos usuários.
+    """
     access_policy = PerfilAccessPolicy
     serializer_class = PerfilSerializer
     model = Perfil
@@ -41,7 +53,12 @@ class PerfilViewSet(AccessViewSetMixin, ModelViewSet):
         serializer.save(usuario_modificacao=self.request.user)
 
 
-class EnderecoViewSet(AccessViewSetMixin, ModelViewSet):
+class EnderecoViewSet(AccessViewSetMixin,
+                      mixins.CreateModelMixin,
+                      mixins.RetrieveModelMixin,
+                      mixins.DestroyModelMixin,
+                      mixins.ListModelMixin,
+                      GenericViewSet):
     access_policy = DadosParaContatoAccessPolicy
     serializer_class = EnderecoSerializer
     model = Endereco
@@ -52,7 +69,12 @@ class EnderecoViewSet(AccessViewSetMixin, ModelViewSet):
         )
 
 
-class TelefoneViewSet(AccessViewSetMixin, ModelViewSet):
+class TelefoneViewSet(AccessViewSetMixin,
+                      mixins.CreateModelMixin,
+                      mixins.RetrieveModelMixin,
+                      mixins.DestroyModelMixin,
+                      mixins.ListModelMixin,
+                      GenericViewSet):
     access_policy = DadosParaContatoAccessPolicy
     serializer_class = TelefoneSerializer
     model = Telefone
@@ -61,6 +83,11 @@ class TelefoneViewSet(AccessViewSetMixin, ModelViewSet):
         return self.access_policy.scope_queryset(
             self.request, self.model.objects.all()
         )
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        self.perform_destroy(instance)
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class OutroEmailViewSet(AccessViewSetMixin, ModelViewSet):
@@ -74,7 +101,12 @@ class OutroEmailViewSet(AccessViewSetMixin, ModelViewSet):
         )
 
 
-class CargoViewSet(AccessViewSetMixin, ModelViewSet):
+class CargoViewSet(AccessViewSetMixin,
+                   mixins.CreateModelMixin,
+                   mixins.RetrieveModelMixin,
+                   mixins.UpdateModelMixin,
+                   mixins.ListModelMixin,
+                   GenericViewSet):
     access_policy = CargoAccessPolicy
     serializer_class = CargoSerializer
     model = Cargo
@@ -83,6 +115,42 @@ class CargoViewSet(AccessViewSetMixin, ModelViewSet):
         return self.access_policy.scope_queryset(
             self.request, self.model.objects.all()
         )
+
+    def perform_create(self, serializer):
+        serializer.save(usuario_modificacao=self.request.user)
+
+    def perform_update(self, serializer):
+        serializer.save(usuario_modificacao=self.request.user)
+
+    @action(detail=True, methods=['patch'], serializer_class=CargoMudarAtivacaoSerializer)
+    def ativar(self, request, pk=None):
+        cargo = self.get_object()
+        serializer = self.get_serializer(
+            cargo,
+            data={'ativo': True},
+            partial=True
+        )
+        if serializer.is_valid():
+            serializer.save()
+            return Response({'status': 'Cargo desativado.'},
+                            status=status.HTTP_200_OK)
+        return Response(serializer.errors,
+                        status=status.HTTP_400_BAD_REQUEST)
+
+    @action(detail=True, methods=['patch'], serializer_class=CargoMudarAtivacaoSerializer)
+    def desativar(self, request, pk=None):
+        cargo = self.get_object()
+        serializer = self.get_serializer(
+            cargo,
+            data={'ativo': False},
+            partial=True
+        )
+        if serializer.is_valid():
+            serializer.save()
+            return Response({'status': 'Cargo desativado.'},
+                            status=status.HTTP_200_OK)
+        return Response(serializer.errors,
+                        status=status.HTTP_400_BAD_REQUEST)
 
 
 class DepartamentoViewSet(AccessViewSetMixin, ModelViewSet):
@@ -94,3 +162,39 @@ class DepartamentoViewSet(AccessViewSetMixin, ModelViewSet):
         return self.access_policy.scope_queryset(
             self.request, self.model.objects.all()
         )
+
+    def perform_create(self, serializer):
+        serializer.save(usuario_modificacao=self.request.user)
+
+    def perform_update(self, serializer):
+        serializer.save(usuario_modificacao=self.request.user)
+
+    @action(detail=True, methods=['patch'], serializer_class=DepartamentoMudarAtivacaoSerializer)
+    def ativar(self, request, pk=None):
+        cargo = self.get_object()
+        serializer = self.get_serializer(
+            cargo,
+            data={'ativo': True},
+            partial=True
+        )
+        if serializer.is_valid():
+            serializer.save()
+            return Response({'status': 'Cargo desativado.'},
+                            status=status.HTTP_200_OK)
+        return Response(serializer.errors,
+                        status=status.HTTP_400_BAD_REQUEST)
+
+    @action(detail=True, methods=['patch'], serializer_class=DepartamentoMudarAtivacaoSerializer)
+    def desativar(self, request, pk=None):
+        cargo = self.get_object()
+        serializer = self.get_serializer(
+            cargo,
+            data={'ativo': False},
+            partial=True
+        )
+        if serializer.is_valid():
+            serializer.save()
+            return Response({'status': 'Cargo desativado.'},
+                            status=status.HTTP_200_OK)
+        return Response(serializer.errors,
+                        status=status.HTTP_400_BAD_REQUEST)

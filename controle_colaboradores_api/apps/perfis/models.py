@@ -119,7 +119,7 @@ class OutroEmail(Base):
         return self.email
 
 
-class Cargo(Base):
+class Cargo(BaseParaModelsImportantes):
     nome = models.CharField('Nome', max_length=50)
     classe = models.CharField('Classe', max_length=50)
     salario = models.DecimalField('Salário', decimal_places=2, max_digits=20, validators=[MinValueValidator(1)])
@@ -136,7 +136,7 @@ class Cargo(Base):
         return f'{self.nome} - {self.classe}'
 
 
-class Departamento(Base):
+class Departamento(BaseParaModelsImportantes):
     nome = models.CharField('Nome', unique=True, max_length=100)
     diretor = models.ForeignKey(Perfil,
                                 verbose_name="Diretor do departamento",

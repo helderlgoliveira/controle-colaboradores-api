@@ -121,6 +121,9 @@ class CargoSerializer(serializers.HyperlinkedModelSerializer):
             'id',
             'criacao',
             'modificacao',
+            # Fields do model BaseParaModelsImportantes:
+            'ativo',
+            'usuario_modificacao',
             # Fields do model:
             'nome',
             'classe',
@@ -130,7 +133,28 @@ class CargoSerializer(serializers.HyperlinkedModelSerializer):
             # Fields do model Base:
             'id',
             'criacao',
-            'modificacao'
+            'modificacao',
+            # Fields do model BaseParaModelsImportantes:
+            'usuario_modificacao'
+        ]
+
+
+class CargoMudarAtivacaoSerializer(serializers.ModelSerializer):
+
+    def update(self, instance, validated_data):
+        status_ativacao = validated_data['ativo']
+        instance.ativo = status_ativacao
+        instance.save()
+        return instance
+
+    class Meta:
+        model = Cargo
+        fields = [
+            'id',
+            'ativo'
+        ]
+        read_only_fields = [
+            'id'
         ]
 
 
@@ -172,6 +196,9 @@ class DepartamentoSerializer(serializers.HyperlinkedModelSerializer):
             'id',
             'criacao',
             'modificacao',
+            # Fields do model BaseParaModelsImportantes:
+            'ativo',
+            'usuario_modificacao',
             # Fields do model:
             'nome',
             'diretor',
@@ -183,6 +210,27 @@ class DepartamentoSerializer(serializers.HyperlinkedModelSerializer):
             'id',
             'criacao',
             'modificacao'
+            # Fields do model BaseParaModelsImportantes:
+            'usuario_modificacao'
+        ]
+
+
+class DepartamentoMudarAtivacaoSerializer(serializers.ModelSerializer):
+
+    def update(self, instance, validated_data):
+        status_ativacao = validated_data['ativo']
+        instance.ativo = status_ativacao
+        instance.save()
+        return instance
+
+    class Meta:
+        model = Departamento
+        fields = [
+            'id',
+            'ativo'
+        ]
+        read_only_fields = [
+            'id'
         ]
 
 

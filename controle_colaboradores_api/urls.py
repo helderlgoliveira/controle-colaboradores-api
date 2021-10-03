@@ -28,12 +28,12 @@ schema_view = get_schema_view(
    openapi.Info(
       title="Controle de Colaboradores API",
       default_version='v1',
-      description="Descrição",
+      description="API para controle de aspectos relativos a colaboradores em uma empresa/instituição.",
       terms_of_service="https://www.google.com/policies/terms/",
       contact=openapi.Contact(email="contato@dominio.com.br"),
       license=openapi.License(name="BSD License"),
    ),
-   public=True,
+   public=False,
    permission_classes=(permissions.AllowAny,),
 )
 

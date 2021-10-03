@@ -227,7 +227,9 @@ class PasswordResetTokenSerializer(serializers.ModelSerializer):
                                                           ativo=True)
         token_pendente = [t for t in tokens_ativos if not t.expirado]
         if token_pendente:
-            return token_pendente[0]
+            token = token_pendente[0]
+            token.enviar_token_por_email()
+            return token
 
         novo_token = PasswordResetToken.objects.create(usuario=validated_data['usuario'])
         return novo_token

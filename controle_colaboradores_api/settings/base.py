@@ -17,6 +17,8 @@ import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
+from django.urls import reverse
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
@@ -130,8 +132,8 @@ AUTH_USER_MODEL = 'usuarios.CustomUsuario'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Login e Logout:
-LOGIN_REDIRECT_URL = 'index'
-LOGOUT_REDIRECT_URL = 'index'
+LOGIN_REDIRECT_URL = 'api-root'
+LOGOUT_REDIRECT_URL = 'api-root'
 
 # DRF - Django Rest Framwork
 REST_FRAMEWORK = {
@@ -140,7 +142,7 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.TokenAuthentication',
     ),
     'DEFAULT_PERMISSION_CLASSES': (
-        'rest_framework.permissions.IsAdminUser',
+        'rest_framework.permissions.AllowAny',
     ),
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 10,
@@ -154,6 +156,14 @@ REST_FRAMEWORK = {
     }
 }
 
+# Swagger - Documentação on-line da API
+SWAGGER_SETTINGS = {
+    'USE_SESSION_AUTH': True,
+    'LOGIN_URL': 'rest_framework:login',
+    'LOGOUT_URL': 'rest_framework:logout'
+}
+
+
 # Settings para o projeto atual:
 NOME_DO_PROJETO = "Sistema de Controle de Colaboradores"
 
@@ -162,4 +172,5 @@ USER_GROUPS_DO_PROJETO = [
     'Colaboradores'
 ]
 
+# TODO definir o reverse para:
 URL_BASE_CRIAR_NOVA_PASSWORD_APOS_RESETAR_PASSWORD = ".../"
