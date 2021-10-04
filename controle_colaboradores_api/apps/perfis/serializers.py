@@ -96,7 +96,7 @@ class OutroEmailSerializer(serializers.HyperlinkedModelSerializer):
             'modificacao',
             # Fields do model:
             'perfil',
-            'email',
+            'email'
         ]
         read_only_fields = [
             # Fields do model Base:
@@ -168,24 +168,25 @@ class DepartamentoSerializer(serializers.HyperlinkedModelSerializer):
                                                                    context={'request': request}).data
         return data
 
+    def validate_diretor(self, value):
+        if self.instance and self.instance.diretor_substituto == value:
+            raise serializers.ValidationError("O diretor titular e o substituto "
+                                              "não podem ser a mesma pessoa.")
+
+    def validate_diretor_substituto(self, value):
+        if self.instance and self.instance.diretor == value:
+            raise serializers.ValidationError("O diretor titular e o substituto "
+                                              "não podem ser a mesma pessoa.")
+
+    def validate_departamento_superior(self, value):
+        if self.instance and self.instance.id == value.id:
+            raise serializers.ValidationError("O departamento superior não pode "
+                                              "ser o próprio departamento.")
+
     def validate(self, data):
-
-        if 'departamento_superior' in data:
-            if self.instance.id == data['departamento_superior'].id:
-                raise serializers.ValidationError("O departamento superior não pode "
-                                                  "ser o próprio departamento.")
-        if 'diretor' in data:
-            if data['diretor'] == self.instance.diretor_substituto:
-                raise serializers.ValidationError("O diretor titular e o substituto não podem ser a mesma pessoa.")
-
-        if 'diretor_substituto' in data:
-            if data['diretor_substituto'] == self.instance.diretor:
-                raise serializers.ValidationError("O diretor titular e o substituto não podem ser a mesma pessoa.")
-
-        if all(k in data for k in ("diretor", "diretor_substituto")):
+        if all(d in data for d in ("diretor", "diretor_substituto")):
             if data['diretor'] == data['diretor_substituto']:
                 raise serializers.ValidationError("O diretor titular e o substituto não podem ser a mesma pessoa.")
-
         return data
 
     class Meta:

@@ -54,7 +54,7 @@ MIDDLEWARE = [
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware'
 ]
 
 ROOT_URLCONF = 'controle_colaboradores_api.urls'
@@ -156,6 +156,11 @@ REST_FRAMEWORK = {
         'user': '60/minute'
     }
 }
+
+LANGUAGE_CODE = "pt-BR"
+MIDDLEWARE_CLASSES = [
+    'django.middleware.locale.LocaleMiddleware'
+]
 
 # Swagger - Documentação on-line da API
 SWAGGER_SETTINGS = {

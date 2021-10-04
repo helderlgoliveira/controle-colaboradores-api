@@ -1,20 +1,11 @@
 # TO DO
 
-1) VER SE O SWAGGER BATE COM AS ACTIONS DO  ACCESS POLICY
-
-2) docstringrs para os viewsets dos apps
-
-
-3) Validate diretor if instance dirsub diferente 
-Validate diretor substituto if instance dir diferente
-Mas os individuais acima Funcionam se for post? Fazer if self.instance??
-Validade() juntos if data os dois
-
-4) Fazer testes DRF olhar site do DRF e se esse ta atualizado:
+1) Fazer testes DRF olhar site do DRF e se esse tá atualizado:
 https://dev.to/sherlockcodes/pytest-with-django-rest-framework-from-zero-to-hero-8c4
 
+APIRequestFactory (retorna REQUEST) para testes unitários de views e serializers
 
-
+APIClient (retorna RESPONSE) para teste full-cycle de integração
 
 ## Apenas para salvar:
 
@@ -29,6 +20,6 @@ https://dev.to/sherlockcodes/pytest-with-django-rest-framework-from-zero-to-hero
 ## Stages para deploy
 
 - manage.py migrate (O MAKEMIGRATIONS SOMENTE NO DEV PARA COMMIT, na production deve usar as mesmas migrations)
-- executar o cadsatrar localidades_brasileiras
+- executar o cadastrar localidades_brasileiras
 - executar o cadastrar grupos
 - docker-compose com server, db e envs

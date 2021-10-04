@@ -28,9 +28,17 @@ schema_view = get_schema_view(
    openapi.Info(
       title="Controle de Colaboradores API",
       default_version='v1',
-      description="API para controle de aspectos relativos a colaboradores em uma empresa/instituição.",
-      terms_of_service="https://www.google.com/policies/terms/",
-      contact=openapi.Contact(email="contato@dominio.com.br"),
+      description="API para controle de aspectos relativos a colaboradores em uma empresa/instituição.\n\n"
+                  "Inicialmente, cadastre os `cargos` e os `departamentos`.\n"
+                  "Após, crie os `usuarios` e seus respectivos `perfis`.\n"
+                  "Os `grupos` disponíveis para os `usuarios` são: Administradores e Colaboradores. São utilizados "
+                  "para controlar o acesso aos endpoints de acordo com as permissões dos grupos.\n"
+                  "Os endpoints `endereços` e `telefones` referem-se aos `perfis`.\n"
+                  "O endpoint `pwd-reset-tokens` serve para criar tokens para resetar a senha do usuário, "
+                  "os quais são enviados automaticamente para o e-mail do usuário e, posteriormente, "
+                  "utilizados com o endpoint `/usuarios/{id}/mudar_password_apos_reset/`.",
+      terms_of_service="",
+      contact=openapi.Contact(email="helderlgoliveira@gmail.com"),
       license=openapi.License(name="BSD License"),
    ),
    public=True,
@@ -40,7 +48,6 @@ schema_view = get_schema_view(
 api_docs_urlpatterns = [
    re_path(r'^swagger(?P<format>\.json|\.yaml)$', schema_view.without_ui(cache_timeout=0), name='schema-json'),
    re_path(r'^swagger/$', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
-   re_path(r'^redoc/$', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc')
 ]
 
 main_router = DefaultRouter()

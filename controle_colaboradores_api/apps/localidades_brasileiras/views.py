@@ -7,8 +7,14 @@ from .views_access_policies import MunicipioAccessPolicy
 
 
 class MunicipioViewSet(AccessViewSetMixin, ReadOnlyModelViewSet):
+    """
+    Municipio ViewSet description:
+
+    list: Listar municípios.
+    retrieve: Consultar município.
+    """
     access_policy = MunicipioAccessPolicy
     serializer_class = MunicipioSerializer
 
     def get_queryset(self):
-        return Municipio.objects.all()
+        return Municipio.objects.all().order_by("id")

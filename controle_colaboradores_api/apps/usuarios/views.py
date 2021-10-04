@@ -27,6 +27,20 @@ class CustomUsuarioViewSet(AccessViewSetMixin,
                            mixins.RetrieveModelMixin,
                            mixins.ListModelMixin,
                            GenericViewSet):
+    """
+    CustomUsuario ViewSet description:
+
+    create: Criar usuário.
+    retrieve: Consultar usuário.
+    list: Listar usuários.
+    ativar: Ativar usuário.
+    desativar: Desativar usuário.
+    mudar_password_apos_reset: Mudar a password do usuário após a solicitação de resetá-la. Consequentemente,
+     é desativado o token que permitiu a alteração.
+    mudar_password: Atualiza a password do usuário.
+    mudar_email: Atualiza o e-mail do usuário.
+    mudar_grupo: Atualiza o(s) grupo(s) do usuário.
+    """
     access_policy = CustomUsuarioAccessPolicy
     serializer_class = CustomUsuarioSerializer
 
@@ -47,10 +61,6 @@ class CustomUsuarioViewSet(AccessViewSetMixin,
     @transaction.atomic
     @action(detail=True, methods=['patch'], serializer_class=CustomUsuarioMudarPasswordAposResetSerializer)
     def mudar_password_apos_reset(self, request, pk=None):
-        """
-        Mudar a password do usuário após a solicitação de resetá-la.
-        Consequentemente, é desativado o token que permitiu a alteração.
-        """
         usuario = self.get_object()
         try:
             token = request.query_params['token']
@@ -89,9 +99,6 @@ class CustomUsuarioViewSet(AccessViewSetMixin,
 
     @action(detail=True, methods=['patch'], serializer_class=CustomUsuarioMudarPasswordSerializer)
     def mudar_password(self, request, pk=None):
-        """
-        Muda a senha do usuário.
-        """
         usuario = self.get_object()
         serializer = self.get_serializer(usuario,
                                          data=request.data,
@@ -166,6 +173,12 @@ class CustomUsuarioViewSet(AccessViewSetMixin,
 
 
 class GroupViewSet(AccessViewSetMixin, ReadOnlyModelViewSet):
+    """
+    Group ViewSet description:
+
+    list: Listar grupos.
+    retrieve: Consultar grupos.
+    """
     access_policy = GroupAccessPolicy
     serializer_class = GroupSerializer
 
@@ -178,6 +191,13 @@ class PasswordResetTokenViewSet(AccessViewSetMixin,
                                 mixins.RetrieveModelMixin,
                                 mixins.ListModelMixin,
                                 GenericViewSet):
+    """
+    Password Reset Token ViewSet description:
+
+    create: Criar token.
+    retrieve: Consultar token.
+    list: Listar tokens.
+    """
     access_policy = PasswordResetTokenAccessPolicy
     serializer_class = PasswordResetTokenSerializer
 

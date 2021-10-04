@@ -37,7 +37,13 @@ class PerfilViewSet(AccessViewSetMixin,
                     mixins.ListModelMixin,
                     GenericViewSet):
     """
-    Gerenciar os perfis dos usuários.
+    Perfil ViewSet description:
+
+    create: Criar perfil.
+    retrieve: Consultar perfil.
+    update: Atualizar perfil.
+    partial_update: Atualizar parcialmente um perfil.
+    list: Listar perfis.
     """
     access_policy = PerfilAccessPolicy
     serializer_class = PerfilSerializer
@@ -59,6 +65,14 @@ class EnderecoViewSet(AccessViewSetMixin,
                       mixins.DestroyModelMixin,
                       mixins.ListModelMixin,
                       GenericViewSet):
+    """
+    Endereço ViewSet description:
+
+    create: Criar endereço.
+    retrieve: Consultar endereço.
+    destroy: Deletar endereço.
+    list: Listar endereços.
+    """
     access_policy = DadosParaContatoAccessPolicy
     serializer_class = EnderecoSerializer
     model = Endereco
@@ -75,6 +89,14 @@ class TelefoneViewSet(AccessViewSetMixin,
                       mixins.DestroyModelMixin,
                       mixins.ListModelMixin,
                       GenericViewSet):
+    """
+    Telefone ViewSet description:
+
+    create: Criar telefone.
+    retrieve: Consultar telefone.
+    destroy: Deletar telefone.
+    list: Listar telefones.
+    """
     access_policy = DadosParaContatoAccessPolicy
     serializer_class = TelefoneSerializer
     model = Telefone
@@ -84,13 +106,21 @@ class TelefoneViewSet(AccessViewSetMixin,
             self.request, self.model.objects.all()
         )
 
-    def destroy(self, request, *args, **kwargs):
-        instance = self.get_object()
-        self.perform_destroy(instance)
-        return Response(status=status.HTTP_204_NO_CONTENT)
 
+class OutroEmailViewSet(AccessViewSetMixin,
+                        mixins.CreateModelMixin,
+                        mixins.RetrieveModelMixin,
+                        mixins.DestroyModelMixin,
+                        mixins.ListModelMixin,
+                        GenericViewSet):
+    """
+    OutroEmail ViewSet description:
 
-class OutroEmailViewSet(AccessViewSetMixin, ModelViewSet):
+    create: Criar outro e-mail.
+    retrieve: Consultar outro e-mail.
+    destroy: Deletar outro e-mail.
+    list: Listar outros e-mails.
+    """
     access_policy = DadosParaContatoAccessPolicy
     serializer_class = OutroEmailSerializer
     model = OutroEmail
@@ -107,6 +137,17 @@ class CargoViewSet(AccessViewSetMixin,
                    mixins.UpdateModelMixin,
                    mixins.ListModelMixin,
                    GenericViewSet):
+    """
+    Cargo ViewSet description:
+
+    create: Criar cargo.
+    retrieve: Consultar cargo.
+    update: Atualizar cargo.
+    partial_update: Atualizar parcialmente um cargo.
+    list: Listar cargos.
+    ativar: Ativar cargo.
+    desativar: Desativar cargo.
+    """
     access_policy = CargoAccessPolicy
     serializer_class = CargoSerializer
     model = Cargo
@@ -153,7 +194,23 @@ class CargoViewSet(AccessViewSetMixin,
                         status=status.HTTP_400_BAD_REQUEST)
 
 
-class DepartamentoViewSet(AccessViewSetMixin, ModelViewSet):
+class DepartamentoViewSet(AccessViewSetMixin,
+                          mixins.CreateModelMixin,
+                          mixins.RetrieveModelMixin,
+                          mixins.UpdateModelMixin,
+                          mixins.ListModelMixin,
+                          GenericViewSet):
+    """
+    Departamento ViewSet description:
+
+    create: Criar departamento.
+    retrieve: Consultar departamento.
+    update: Atualizar departamento.
+    partial_update: Atualizar parcialmente um departamento.
+    list: Listar departamentos.
+    ativar: Ativar departamento.
+    desativar: Desativar departamento.
+    """
     access_policy = DepartamentoAccessPolicy
     serializer_class = DepartamentoSerializer
     model = Departamento
@@ -171,30 +228,30 @@ class DepartamentoViewSet(AccessViewSetMixin, ModelViewSet):
 
     @action(detail=True, methods=['patch'], serializer_class=DepartamentoMudarAtivacaoSerializer)
     def ativar(self, request, pk=None):
-        cargo = self.get_object()
+        departamento = self.get_object()
         serializer = self.get_serializer(
-            cargo,
+            departamento,
             data={'ativo': True},
             partial=True
         )
         if serializer.is_valid():
             serializer.save()
-            return Response({'status': 'Cargo desativado.'},
+            return Response({'status': 'Departamento desativado.'},
                             status=status.HTTP_200_OK)
         return Response(serializer.errors,
                         status=status.HTTP_400_BAD_REQUEST)
 
     @action(detail=True, methods=['patch'], serializer_class=DepartamentoMudarAtivacaoSerializer)
     def desativar(self, request, pk=None):
-        cargo = self.get_object()
+        departamento = self.get_object()
         serializer = self.get_serializer(
-            cargo,
+            departamento,
             data={'ativo': False},
             partial=True
         )
         if serializer.is_valid():
             serializer.save()
-            return Response({'status': 'Cargo desativado.'},
+            return Response({'status': 'Departamento desativado.'},
                             status=status.HTTP_200_OK)
         return Response(serializer.errors,
                         status=status.HTTP_400_BAD_REQUEST)
