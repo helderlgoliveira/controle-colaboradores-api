@@ -1,5 +1,5 @@
 from django.apps import AppConfig
 
 
-class LocalidadesConfig(AppConfig):
+class LocalidadesBrasileirasConfig(AppConfig):
     name = 'controle_colaboradores_api.apps.localidades_brasileiras'

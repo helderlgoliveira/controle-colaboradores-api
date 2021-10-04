@@ -76,7 +76,7 @@ class TestPasswordResetToken:
         token_length = len(password_reset_token.gerar_token())
         assert 40 <= token_length <= 60
 
-    def test_save(self, mocker):
+    def test_save(self, db, mocker):
         spy = mocker.spy(controle_colaboradores_api.apps.usuarios.models, 'send_mail')
 
         usuario = baker.make('CustomUsuario',
