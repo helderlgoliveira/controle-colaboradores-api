@@ -45,7 +45,7 @@ class CustomUsuarioViewSet(AccessViewSetMixin,
     serializer_class = CustomUsuarioSerializer
 
     def get_queryset(self):
-        return CustomUsuario.objects.all()
+        return CustomUsuario.objects.all().order_by('id')
 
     def perform_create(self, serializer):
         serializer.save(usuario_modificacao=self.request.user)

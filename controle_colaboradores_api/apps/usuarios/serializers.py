@@ -142,8 +142,9 @@ class CustomUsuarioMudarEmailSerializer(serializers.ModelSerializer):
 class CustomUsuarioMudarGrupoSerializer(serializers.ModelSerializer):
 
     def validate_groups(self, value):
-        if value not in Group.objects.all():
-            raise serializers.ValidationError("Grupo inexistente.")
+        for group in value:
+            if not Group.objects.filter(id=group.id).exists():
+                raise serializers.ValidationError("Grupo inexistente.")
         return value
 
     @transaction.atomic
