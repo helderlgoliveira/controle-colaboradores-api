@@ -72,7 +72,7 @@ class CustomUsuarioViewSet(AccessViewSetMixin,
             token_instance = usuario.password_reset_tokens.get(token=token,
                                                                ativo=True)
         except PasswordResetToken.DoesNotExist:
-            return Response({'status': 'Token inexistente.'},
+            return Response({'status': 'Token inválido.'},
                             status=status.HTTP_400_BAD_REQUEST)
 
         serializer_token = PasswordResetTokenSerializer(token_instance,

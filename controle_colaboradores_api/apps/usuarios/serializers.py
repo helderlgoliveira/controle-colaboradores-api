@@ -124,7 +124,7 @@ class CustomUsuarioMudarPasswordAposResetSerializer(serializers.ModelSerializer)
 class CustomUsuarioMudarEmailSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
-        instance.email(validated_data['email'])
+        instance.email = validated_data['email']
         instance.save()
         return instance
 

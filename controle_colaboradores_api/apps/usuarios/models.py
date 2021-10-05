@@ -78,8 +78,8 @@ class PasswordResetToken(models.Model):
     def enviar_token_por_email(self):
         return send_mail(
             f'Criar nova senha - {settings.NOME_DO_PROJETO}',
-            f'Olá, {self.usuario.perfil.nome}! \n'
-            f'Segue o link para criar a sua nova senha: \n'
+            f'Olá!\n'
+            f'Conforme o solicitado, segue o link para criar a sua nova senha: \n'
             f'{settings.URL_BASE_CRIAR_NOVA_PASSWORD_APOS_RESETAR_PASSWORD}{self.token}',
             None,
             [self.usuario.email],
