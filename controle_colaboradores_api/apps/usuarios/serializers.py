@@ -141,12 +141,6 @@ class CustomUsuarioMudarEmailSerializer(serializers.ModelSerializer):
 
 class CustomUsuarioMudarGrupoSerializer(serializers.ModelSerializer):
 
-    def validate_groups(self, value):
-        for group in value:
-            if not Group.objects.filter(id=group.id).exists():
-                raise serializers.ValidationError("Grupo inexistente.")
-        return value
-
     @transaction.atomic
     def update(self, instance, validated_data):
         groups = validated_data['groups']
@@ -205,15 +199,11 @@ class PasswordResetTokenSerializer(serializers.ModelSerializer):
         ]
 
     def validate(self, data):
-        if "token" in data:
-            token_queryset = PasswordResetToken.objects.filter(usuario=data['usuario'], token=data['token'])
-            token_existe = token_queryset.exists()
-            if not token_existe:
-                raise serializers.ValidationError("Token inválido.")
-            token = token_queryset.get()
-            if not token.ativo:
-                raise serializers.ValidationError("Token inativo (já utilizado ou prazo expirou).")
-            self.instance = token
+        if self.instance:
+            if not self.instance.ativo:
+                raise serializers.ValidationError({"status": "Token já utilizado."})
+            if self.instance.expirado:
+                raise serializers.ValidationError({"status": "Token expirado."})
         return data
 
     def to_representation(self, instance):

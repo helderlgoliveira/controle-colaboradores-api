@@ -6,9 +6,15 @@ class CustomUsuarioAccessPolicy(AccessPolicy):
         {
             "action": ["list", "retrieve",
                        "create", "mudar_grupo",
-                       "ativar", "desativar"],
+                       "desativar"],
             "principal": ["group:Administradores"],
             "effect": "allow"
+        },
+        {
+            "action": ["ativar"],
+            "principal": ["group:Administradores"],
+            "effect": "allow",
+            "condition": "esta_ativando_outro_usuario"
         },
         {
             "action": ["retrieve", "mudar_email", "mudar_password"],
@@ -27,6 +33,10 @@ class CustomUsuarioAccessPolicy(AccessPolicy):
         usuario = view.get_object()
         return request.user == usuario
 
+    def esta_ativando_outro_usuario(self, request, view, action) -> bool:
+        usuario = view.get_object()
+        return request.user != usuario
+
 
 class GroupAccessPolicy(AccessPolicy):
     statements = [
@@ -42,11 +52,12 @@ class PasswordResetTokenAccessPolicy(AccessPolicy):
     statements = [
         {
             "action": ["list", "retrieve"],
+            # Admin do Django (não mero usuário do Grupo Administradores):
             "principal": ["admin"],
             "effect": "allow"
         },
         {
-            "action": ["create", "update", "partial_update"],
+            "action": ["create"],
             "principal": ["*"],
             "effect": "allow"
         }

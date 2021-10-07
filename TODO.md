@@ -1,11 +1,27 @@
 # TO DO
 
+
+DJANGO REVERSION + AUDIT LOG???
+
+
+TESTE DOS PERFIS (VIEWSETS E SERIALIZERS)
+
+e depois ver coverage dos testes comuns apos as mudanças que fiz
 1) Fazer testes DRF olhar site do DRF e se esse tá atualizado:
 https://dev.to/sherlockcodes/pytest-with-django-rest-framework-from-zero-to-hero-8c4
 
 APIRequestFactory (retorna REQUEST) para testes unitários de views e serializers
 
 APIClient (retorna RESPONSE) para teste full-cycle de integração
+
+---------------
+Serializers: uns dizem só para testar 
+(1) as funções próprias que criou dentro do serializers, e de repente se quiser um 
+(2) formato especifico fazer teste para impedir que alterem o formato de saída. (ESSA PARTE TENHO FEITO NO EXPECTED_JSON DO TESTE DAS VIEWS) 
+
+Here is what we do at edX: https://github.com/edx/course-discovery/blob/7b7ca8924f0fb83dfe1363a6a0b112494e0bac59/course_discovery/apps/api/tests/test_serializers.py#L98-L120.
+
+Our philosophy is to test the serializers, and use the (now tested/trusted) serializers to validate the data of our views. See https://github.com/edx/course-discovery/blob/7b7ca8924f0fb83dfe1363a6a0b112494e0bac59/course_discovery/apps/api/v1/tests/test_views/test_course_runs.py#L38-L46 for an example of a view test.
 
 ## Apenas para salvar:
 

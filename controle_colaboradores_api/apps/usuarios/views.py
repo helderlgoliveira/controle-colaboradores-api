@@ -53,8 +53,7 @@ class CustomUsuarioViewSet(AccessViewSetMixin,
     def perform_update(self, serializer):
         serializer.save(usuario_modificacao=self.request.user)
 
-    @swagger_auto_schema(method='patch',
-                         manual_parameters=[openapi.Parameter('token',
+    @swagger_auto_schema(method='patch', manual_parameters=[openapi.Parameter('token',
                                                               openapi.IN_QUERY,
                                                               type=openapi.TYPE_STRING,
                                                               required=True)])
@@ -67,10 +66,8 @@ class CustomUsuarioViewSet(AccessViewSetMixin,
         except KeyError:
             return Response({'status': 'Token não informado.'},
                             status=status.HTTP_400_BAD_REQUEST)
-
         try:
-            token_instance = usuario.password_reset_tokens.get(token=token,
-                                                               ativo=True)
+            token_instance = usuario.password_reset_tokens.get(token=token)
         except PasswordResetToken.DoesNotExist:
             return Response({'status': 'Token inválido.'},
                             status=status.HTTP_400_BAD_REQUEST)
@@ -183,7 +180,7 @@ class GroupViewSet(AccessViewSetMixin, ReadOnlyModelViewSet):
     serializer_class = GroupSerializer
 
     def get_queryset(self):
-        return Group.objects.all()
+        return Group.objects.all().order_by('id')
 
 
 class PasswordResetTokenViewSet(AccessViewSetMixin,
