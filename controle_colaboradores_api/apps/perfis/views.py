@@ -217,7 +217,7 @@ class DepartamentoViewSet(AccessViewSetMixin,
 
     def get_queryset(self):
         return self.access_policy.scope_queryset(
-            self.request, self.model.objects.all()
+            self.request, self.model.objects.all().order_by('id')
         )
 
     def perform_create(self, serializer):

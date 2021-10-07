@@ -174,20 +174,17 @@ class DepartamentoSerializer(serializers.HyperlinkedModelSerializer):
                                               "não podem ser a mesma pessoa.")
         return value
 
-
     def validate_diretor_substituto(self, value):
         if self.instance and self.instance.diretor == value:
             raise serializers.ValidationError("O diretor titular e o substituto "
                                               "não podem ser a mesma pessoa.")
         return value
 
-
     def validate_departamento_superior(self, value):
         if self.instance and self.instance.id == value.id:
             raise serializers.ValidationError("O departamento superior não pode "
                                               "ser o próprio departamento.")
         return value
-
 
     def validate(self, data):
         if all(d in data for d in ("diretor", "diretor_substituto")):
@@ -216,7 +213,7 @@ class DepartamentoSerializer(serializers.HyperlinkedModelSerializer):
             # Fields do model Base:
             'id',
             'criacao',
-            'modificacao'
+            'modificacao',
             # Fields do model BaseParaModelsImportantes:
             'usuario_modificacao'
         ]

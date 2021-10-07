@@ -93,6 +93,6 @@ class DepartamentoAccessPolicy(AccessPolicy):
     def scope_queryset(cls, request, queryset):
         if request.user.groups.filter(name='Administradores').exists():
             return queryset
-        departamentos_do_usuario = request.user.perfil.departamentos.all(ativo=True)
+        departamentos_do_usuario = request.user.perfil.departamentos.filter(ativo=True)
         return queryset.filter(id__in=departamentos_do_usuario).prefetch_related('perfis')
 
