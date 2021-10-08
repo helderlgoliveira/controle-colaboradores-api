@@ -113,20 +113,6 @@ class TestDepartamentoSerializer:
     def serializer(self, db, departamento):
         return DepartamentoSerializer(departamento)
 
-    def test_validate_diretor(self, serializer, perfil):
-        with pytest.raises(rest_ValidationError):
-            serializer.validate_diretor(perfil)
-        serializer.instance.diretor_substituto = None
-        serializer.instance.save()
-        assert serializer.validate_diretor(perfil)
-
-    def test_validate_diretor_substituto(self, serializer, perfil, outro_perfil):
-        with pytest.raises(rest_ValidationError):
-            serializer.validate_diretor_substituto(perfil)
-        serializer.instance.diretor = outro_perfil
-        serializer.instance.save()
-        assert serializer.validate_diretor_substituto(perfil)
-
     def test_validate_departamento_superior(self, serializer, departamento, outro_perfil):
         with pytest.raises(rest_ValidationError):
             serializer.validate_departamento_superior(departamento)
@@ -139,6 +125,20 @@ class TestDepartamentoSerializer:
         with pytest.raises(rest_ValidationError):
             serializer.validate({"diretor": perfil, "diretor_substituto": perfil})
         assert serializer.validate({"diretor": perfil, "diretor_substituto": outro_perfil})
+
+    def test_validate_diretor(self, serializer, perfil):
+        with pytest.raises(rest_ValidationError):
+            serializer.validate({"diretor": perfil})
+        serializer.instance.diretor_substituto = None
+        serializer.instance.save()
+        assert serializer.validate({"diretor": perfil})
+
+    def test_validate_diretor_substituto(self, serializer, perfil, outro_perfil):
+        with pytest.raises(rest_ValidationError):
+            serializer.validate({"diretor_substituto": perfil})
+        serializer.instance.diretor = outro_perfil
+        serializer.instance.save()
+        assert serializer.validate({"diretor_substituto": perfil})
 
 
 class TesteDepartamentoMudarAtivacaoSerializer:

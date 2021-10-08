@@ -50,7 +50,7 @@ class PerfilViewSet(AccessViewSetMixin,
     model = Perfil
 
     def get_queryset(self):
-        return self.model.objects.all()
+        return self.model.objects.all().order_by('id')
 
     def perform_create(self, serializer):
         serializer.save(usuario_modificacao=self.request.user)
@@ -79,7 +79,7 @@ class EnderecoViewSet(AccessViewSetMixin,
 
     def get_queryset(self):
         return self.access_policy.scope_queryset(
-            self.request, self.model.objects.all()
+            self.request, self.model.objects.all().order_by('id')
         )
 
 
@@ -103,7 +103,7 @@ class TelefoneViewSet(AccessViewSetMixin,
 
     def get_queryset(self):
         return self.access_policy.scope_queryset(
-            self.request, self.model.objects.all()
+            self.request, self.model.objects.all().order_by('id')
         )
 
 
@@ -127,7 +127,7 @@ class OutroEmailViewSet(AccessViewSetMixin,
 
     def get_queryset(self):
         return self.access_policy.scope_queryset(
-            self.request, self.model.objects.all()
+            self.request, self.model.objects.all().order_by('id')
         )
 
 
@@ -154,7 +154,7 @@ class CargoViewSet(AccessViewSetMixin,
 
     def get_queryset(self):
         return self.access_policy.scope_queryset(
-            self.request, self.model.objects.all()
+            self.request, self.model.objects.all().order_by('id')
         )
 
     def perform_create(self, serializer):

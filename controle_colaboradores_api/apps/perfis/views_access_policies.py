@@ -71,7 +71,7 @@ class CargoAccessPolicy(AccessPolicy):
     def scope_queryset(cls, request, queryset):
         if request.user.groups.filter(name='Administradores').exists():
             return queryset
-        cargos_do_usuario = request.user.perfil.cargos.all(ativo=True)
+        cargos_do_usuario = request.user.perfil.cargos.filter(ativo=True)
         return queryset.filter(id__in=cargos_do_usuario).prefetch_related('perfis')
 
 
