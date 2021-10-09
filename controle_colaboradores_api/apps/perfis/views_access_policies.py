@@ -63,7 +63,7 @@ class CargoAccessPolicy(AccessPolicy):
         {
             "action": ["list", "retrieve"],
             "principal": ["group:Colaboradores"],
-            "effect": "allow",
+            "effect": "allow"
         }
     ]
 

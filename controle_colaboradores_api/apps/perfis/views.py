@@ -173,7 +173,7 @@ class CargoViewSet(AccessViewSetMixin,
         )
         if serializer.is_valid():
             serializer.save()
-            return Response({'status': 'Cargo desativado.'},
+            return Response({'status': 'Cargo ativado.'},
                             status=status.HTTP_200_OK)
         return Response(serializer.errors,
                         status=status.HTTP_400_BAD_REQUEST)
