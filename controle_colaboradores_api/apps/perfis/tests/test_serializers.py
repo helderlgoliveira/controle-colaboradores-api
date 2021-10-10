@@ -2,7 +2,7 @@ import pytest
 from django.contrib.auth.hashers import make_password
 from rest_framework.exceptions import ValidationError as rest_ValidationError
 from model_bakery import baker
-from pycpfcnpj import cpf, gen
+from pycpfcnpj import gen
 
 from controle_colaboradores_api.apps.perfis.serializers import (
     EnderecoSerializer,

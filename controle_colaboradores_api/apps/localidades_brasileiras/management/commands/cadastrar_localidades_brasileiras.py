@@ -15,6 +15,7 @@ class Command(BaseCommand):
         self._cadastrar_municipios()
         self._relacionar_capitais_com_ufs()
         self.stdout.write(self.style.SUCCESS(f"-- Localidades brasileiras registradas/atualizadas com sucesso."))
+        return "Fim da execução bem sucedida."
 
     @transaction.atomic
     def _cadastrar_unidades_federativas(self):

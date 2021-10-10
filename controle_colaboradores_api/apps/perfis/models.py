@@ -69,7 +69,9 @@ class Endereco(Base):
     numero = models.CharField('Número', max_length=10)
     bairro = models.CharField('Bairro', max_length=50)
     complemento = models.CharField('Complemento', max_length=50, blank=True)
-    municipio = models.ForeignKey('localidades_brasileiras.Municipio', related_name="enderecos", on_delete=models.RESTRICT)
+    municipio = models.ForeignKey('localidades_brasileiras.Municipio',
+                                  related_name="enderecos",
+                                  on_delete=models.RESTRICT)
     cep = models.CharField('CEP', max_length=20)
 
     @property

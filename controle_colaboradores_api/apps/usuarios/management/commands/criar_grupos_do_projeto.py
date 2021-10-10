@@ -17,3 +17,4 @@ class Command(BaseCommand):
                 self.stdout.write(self.style.SUCCESS(f"Grupo '{grupo}' criado."))
             else:
                 self.stdout.write(f"Grupo '{grupo}' não precisou ser criado pois já existe.")
+        return "Fim da execução bem sucedida."

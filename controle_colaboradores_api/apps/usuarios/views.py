@@ -209,7 +209,7 @@ class PasswordResetTokenViewSet(AccessViewSetMixin,
     serializer_class = PasswordResetTokenSerializer
 
     def get_queryset(self):
-        return PasswordResetToken.objects.all()
+        return PasswordResetToken.objects.all().order_by('id')
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)

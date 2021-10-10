@@ -17,8 +17,6 @@ import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-from django.urls import reverse
-
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
@@ -157,7 +155,6 @@ REST_FRAMEWORK = {
     }
 }
 
-LANGUAGE_CODE = "pt-BR"
 MIDDLEWARE_CLASSES = [
     'django.middleware.locale.LocaleMiddleware'
 ]

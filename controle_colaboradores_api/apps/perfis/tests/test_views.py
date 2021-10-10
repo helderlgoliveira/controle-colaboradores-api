@@ -2,7 +2,6 @@ import json
 
 import pytest
 from django.contrib.auth.hashers import make_password
-from django.utils import timezone
 from model_bakery import baker
 from pycpfcnpj import gen
 from rest_framework.reverse import reverse
@@ -170,7 +169,6 @@ class TestPerfilViewSet:
         assert json.loads(response.content)['nome'] == "Fulano"
         # - perfil de outro usuário
         response = api_client.get(endpoint_url_perfil_do_outro_usuario)
-        print(json.loads(response.content))
         assert response.status_code == 403
 
         # do grupo Administradores
@@ -244,7 +242,7 @@ class TestPerfilViewSet:
         perfil_criado_url = 'http://testserver' + \
                             reverse('perfil-detail',
                                     args=[perfil_criado.id])
-        response_usuario_descricao = api_client.get(outro_usuario_url,format='json')
+        response_usuario_descricao = api_client.get(outro_usuario_url, format='json')
         usuario_descricao = json.loads(response_usuario_descricao.content)
         expected_json = {
             "url": perfil_criado_url,
@@ -272,7 +270,6 @@ class TestPerfilViewSet:
             "telefones": [],
             "outros_emails": []
         }
-        print(json.loads(response.content))
         assert response.status_code == 201
         assert json.loads(response.content) == expected_json
 

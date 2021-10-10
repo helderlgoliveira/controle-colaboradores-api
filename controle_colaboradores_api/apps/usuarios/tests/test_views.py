@@ -277,12 +277,12 @@ class TestCustomUsuarioViewSet:
                          api_client,
                          usuario,
                          outro_usuario):
+        endpoint_url_usuario = reverse('customusuario-mudar-email', args=[usuario.id])
+        endpoint_url_outro_usuario = reverse('customusuario-mudar-email', args=[outro_usuario.id])
         json_para_patch = {
             'email': 'novoemail@email.com',
             'password': 'usuario'
         }
-        endpoint_url_usuario = reverse('customusuario-mudar-email', args=[usuario.id])
-        endpoint_url_outro_usuario = reverse('customusuario-mudar-email', args=[outro_usuario.id])
 
         # Por Anônimo
         response = api_client.patch(
@@ -294,6 +294,13 @@ class TestCustomUsuarioViewSet:
 
         # Usuário autenticado
         api_client.force_authenticate(user=usuario)
+        # - tentando mudar o próprio e-mail sem informar senha atual:
+        response = api_client.patch(
+            endpoint_url_usuario,
+            data={'email': 'novoemail@email.com'},
+            format='json'
+        )
+        assert response.status_code == 400
         # - mudando o próprio e-mail:
         response = api_client.patch(
             endpoint_url_usuario,
@@ -462,10 +469,26 @@ class TestPasswordResetTokenViewSet:
                   api_client,
                   usuario,
                   password_reset_token):
-        usuario.is_superuser = True
-        usuario.save()
 
         endpoint_url = reverse('passwordresettoken-list')
+
+        # Por Anônimo
+        response = api_client.get(endpoint_url)
+        assert response.status_code == 401
+
+        # Por Usuário autenticado
+        api_client.force_authenticate(user=usuario)
+        # - sendo usuário comum:
+        response = api_client.get(endpoint_url)
+        assert response.status_code == 403
+        # - sendo admin (superuser):
+        usuario.is_superuser = True
+        usuario.save()
+        response = api_client.get(endpoint_url)
+        results = json.loads(response.content)['results']
+        assert response.status_code == 200
+        assert len(results) == 1
+        assert results[0]['usuario']['email'] == "usuario@email.com"
 
     def test_retrieve(self,
                       db,
