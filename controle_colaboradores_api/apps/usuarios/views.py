@@ -146,6 +146,11 @@ class CustomUsuarioViewSet(AccessViewSetMixin,
         )
         if serializer.is_valid():
             serializer.save()
+            try:
+                usuario.perfil.ativo = True
+                usuario.perfil.save()
+            except Exception:
+                print("Não há perfil vinculado ao usuário.")
             return Response({'status': 'Usuário ativado.'},
                             status=status.HTTP_200_OK)
 
@@ -162,6 +167,11 @@ class CustomUsuarioViewSet(AccessViewSetMixin,
         )
         if serializer.is_valid():
             serializer.save()
+            try:
+                usuario.perfil.ativo = False
+                usuario.perfil.save()
+            except Exception:
+                print("Não há perfil vinculado ao usuário.")
             return Response({'status': 'Usuário desativado.'},
                             status=status.HTTP_200_OK)
 

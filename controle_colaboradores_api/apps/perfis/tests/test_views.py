@@ -2,12 +2,14 @@ import json
 
 import pytest
 from django.contrib.auth.hashers import make_password
+from django.utils import timezone
 from model_bakery import baker
+from pycpfcnpj import gen
 from rest_framework.reverse import reverse
 from rest_framework.test import APIClient
 
 from controle_colaboradores_api.apps.perfis.models import (
-    Perfil, Departamento, Cargo, OutroEmail
+    Perfil, Departamento, Cargo, OutroEmail, Telefone, Endereco
 )
 
 
@@ -100,24 +102,510 @@ def outro_telefone(outro_perfil):
 def endereco(perfil):
     return baker.make('Endereco',
                       perfil=perfil,
-                      is_principal=True)
+                      is_principal=True,
+                      logradouro="Rua Um")
 
 
 @pytest.fixture
 def outro_endereco(outro_perfil):
     return baker.make('Endereco',
                       perfil=outro_perfil,
-                      is_principal=True)
+                      is_principal=True,
+                      logradouro="Rua Dois")
 
 
 class TestPerfilViewSet:
-    # TODO
-    pass
+
+    def test_list(self,
+                  db,
+                  api_client,
+                  usuario,
+                  perfil,
+                  grupo_administradores,
+                  grupo_colaboradores):
+        endpoint_url = reverse('perfil-list')
+
+        # Por Anônimo
+        response = api_client.get(endpoint_url)
+        assert response.status_code == 401
+
+        # Por Usuário autenticado
+        api_client.force_authenticate(user=usuario)
+        # do grupo Colaboradores
+        # - sem nenhum cargo atrelado ao perfil
+        usuario.groups.set([grupo_colaboradores.id])
+        response = api_client.get(endpoint_url)
+        assert response.status_code == 403
+
+        # do grupo Administradores
+        usuario.groups.set([grupo_administradores.id])
+        response = api_client.get(endpoint_url)
+        results = json.loads(response.content)['results']
+        assert response.status_code == 200
+        assert len(results) == 1
+        assert results[0]['nome'] == "Fulano"
+
+    def test_retrieve(self,
+                      db,
+                      api_client,
+                      usuario,
+                      perfil,
+                      outro_perfil,
+                      grupo_administradores,
+                      grupo_colaboradores):
+        endpoint_url_perfil_do_usuario = reverse('perfil-detail', args=[perfil.id])
+        endpoint_url_perfil_do_outro_usuario = reverse('perfil-detail', args=[outro_perfil.id])
+
+        # Por Anônimo
+        response = api_client.get(endpoint_url_perfil_do_usuario)
+        assert response.status_code == 401
+
+        # Por Usuário autenticado
+        api_client.force_authenticate(user=usuario)
+        # do grupo Colaboradores
+        # - perfil do usuário
+        usuario.groups.set([grupo_colaboradores.id])
+        response = api_client.get(endpoint_url_perfil_do_usuario)
+        assert response.status_code == 200
+        assert json.loads(response.content)['nome'] == "Fulano"
+        # - perfil de outro usuário
+        response = api_client.get(endpoint_url_perfil_do_outro_usuario)
+        print(json.loads(response.content))
+        assert response.status_code == 403
+
+        # do grupo Administradores
+        usuario.groups.set([grupo_administradores.id])
+        response = api_client.get(endpoint_url_perfil_do_outro_usuario)
+        assert response.status_code == 200
+        assert json.loads(response.content)['nome'] == "Beltrano"
+
+    def test_create(self,
+                    db,
+                    api_client,
+                    usuario,
+                    outro_usuario,
+                    perfil,
+                    grupo_administradores,
+                    grupo_colaboradores):
+        endpoint_url = reverse('perfil-list')
+        usuario_url = 'http://testserver' + reverse('customusuario-detail',
+                                                    args=[usuario.id])
+        outro_usuario_url = 'http://testserver' + reverse('customusuario-detail',
+                                                          args=[outro_usuario.id])
+
+        json_para_post = {
+            "usuario": outro_usuario_url,
+            "nome": "Cicrano",
+            "sobrenome": "da Silva",
+            "cpf": gen.cpf_with_punctuation(),
+            "contrato_identificador": "abcd123",
+            "data_admissao": "2021-10-09",
+            "dados_bancarios_banco": "Banco Bom",
+            "dados_bancarios_agencia": "Ag. 123",
+            "dados_bancarios_conta": "CC 123123",
+            "cargos": [],
+            "municipios_onde_trabalha": [],
+            "departamentos": [],
+            "diretor_em": [],
+            "diretor_substituto_em": [],
+            "enderecos": [],
+            "telefones": [],
+            "outros_emails": []
+        }
+
+        # Por Anônimo
+        response = api_client.post(
+            endpoint_url,
+            data=json_para_post,
+            format='json'
+        )
+        assert response.status_code == 401
+
+        # Usuário autenticado
+        api_client.force_authenticate(user=usuario)
+
+        # do grupo Colaboradores
+        usuario.groups.set([grupo_colaboradores.id])
+        response = api_client.post(
+            endpoint_url,
+            data=json_para_post,
+            format='json'
+        )
+        assert response.status_code == 403
+
+        # do grupo Administradores
+        usuario.groups.set([grupo_administradores.id])
+        response = api_client.post(
+            endpoint_url,
+            data=json_para_post,
+            format='json'
+        )
+        perfil_criado = Perfil.objects.last()
+        perfil_criado_url = 'http://testserver' + \
+                            reverse('perfil-detail',
+                                    args=[perfil_criado.id])
+        response_usuario_descricao = api_client.get(outro_usuario_url,format='json')
+        usuario_descricao = json.loads(response_usuario_descricao.content)
+        expected_json = {
+            "url": perfil_criado_url,
+            "id": perfil_criado.id,
+            "criacao": perfil_criado.criacao.astimezone().isoformat(),
+            "modificacao": perfil_criado.modificacao.astimezone().isoformat(),
+            "ativo": perfil_criado.ativo,
+            "usuario_modificacao": usuario_url,
+            "usuario": usuario_descricao,
+            "nome": perfil_criado.nome,
+            "sobrenome": perfil_criado.sobrenome,
+            "cpf": perfil_criado.cpf,
+            "contrato_identificador": perfil_criado.contrato_identificador,
+            "data_admissao": perfil_criado.data_admissao.isoformat(),
+            "data_demissao": perfil_criado.data_demissao,
+            "dados_bancarios_banco": perfil_criado.dados_bancarios_banco,
+            "dados_bancarios_agencia": perfil_criado.dados_bancarios_agencia,
+            "dados_bancarios_conta": perfil_criado.dados_bancarios_conta,
+            "cargos": [],
+            "municipios_onde_trabalha": [],
+            "departamentos": [],
+            "diretor_em": [],
+            "diretor_substituto_em": [],
+            "enderecos": [],
+            "telefones": [],
+            "outros_emails": []
+        }
+        print(json.loads(response.content))
+        assert response.status_code == 201
+        assert json.loads(response.content) == expected_json
+
+    def test_update(self,
+                    db,
+                    api_client,
+                    usuario,
+                    perfil,
+                    outro_perfil,
+                    grupo_administradores,
+                    grupo_colaboradores):
+        endpoint_url_perfil_do_usuario = reverse('perfil-detail', args=[perfil.id])
+        endpoint_url_perfil_do_outro_usuario = reverse('perfil-detail', args=[outro_perfil.id])
+        usuario_url = 'http://testserver' + reverse('customusuario-detail',
+                                                    args=[usuario.id])
+
+        json_para_put = {
+            "usuario": usuario_url,
+            "nome": "Cicrano",
+            "sobrenome": "da Silva",
+            "cpf": gen.cpf_with_punctuation(),
+            "contrato_identificador": "abcd123",
+            "data_admissao": "2021-10-09",
+            "dados_bancarios_banco": "Banco Bom",
+            "dados_bancarios_agencia": "Ag. 123",
+            "dados_bancarios_conta": "CC 123123",
+            "cargos": [],
+            "municipios_onde_trabalha": [],
+            "departamentos": [],
+            "diretor_em": [],
+            "diretor_substituto_em": [],
+            "enderecos": [],
+            "telefones": [],
+            "outros_emails": []
+        }
+        # Por Anônimo
+        response = api_client.put(
+            endpoint_url_perfil_do_usuario,
+            data=json_para_put,
+            format='json'
+        )
+        assert response.status_code == 401
+
+        # Por Usuário autenticado
+        api_client.force_authenticate(user=usuario)
+        # do grupo Colaboradores
+        # - update o próprio perfil:
+        usuario.groups.set([grupo_colaboradores.id])
+        response = api_client.put(
+            endpoint_url_perfil_do_usuario,
+            data=json_para_put,
+            format='json'
+        )
+        assert response.status_code == 200
+        assert json.loads(response.content)['nome'] == "Cicrano"
+        # - update perfil de outro usuário:
+        response = api_client.put(
+            endpoint_url_perfil_do_outro_usuario,
+            data=json_para_put,
+            format='json'
+        )
+        assert response.status_code == 403
+
+        # do grupo Administradores
+        usuario.groups.set([grupo_administradores.id])
+        json_para_put['nome'] = "Fulano"
+        response = api_client.put(
+            endpoint_url_perfil_do_usuario,
+            data=json_para_put,
+            format='json'
+        )
+        assert response.status_code == 200
+        assert json.loads(response.content)['nome'] == "Fulano"
+
+    def test_partial_update(self,
+                            db,
+                            api_client,
+                            usuario,
+                            perfil,
+                            outro_perfil,
+                            grupo_administradores,
+                            grupo_colaboradores):
+        endpoint_url_perfil_do_usuario = reverse('perfil-detail', args=[perfil.id])
+        endpoint_url_perfil_do_outro_usuario = reverse('perfil-detail', args=[outro_perfil.id])
+        json_para_patch = {
+            'sobrenome': 'dos Santos'
+        }
+
+        # Por Anônimo
+        response = api_client.patch(
+            endpoint_url_perfil_do_usuario,
+            data=json_para_patch,
+            format='json'
+        )
+        assert response.status_code == 401
+
+        # Por Usuário autenticado
+        api_client.force_authenticate(user=usuario)
+        # do grupo Colaboradores
+        usuario.groups.set([grupo_colaboradores.id])
+        # - partial update do próprio perfil:
+        response = api_client.patch(
+            endpoint_url_perfil_do_usuario,
+            data=json_para_patch,
+            format='json'
+        )
+        assert response.status_code == 200
+        assert json.loads(response.content)['sobrenome'] == 'dos Santos'
+        # - partial update do perfil de outro usuário:
+        response = api_client.patch(
+            endpoint_url_perfil_do_outro_usuario,
+            data=json_para_patch,
+            format='json'
+        )
+        assert response.status_code == 403
+
+        # do grupo Administradores
+        usuario.groups.set([grupo_administradores.id])
+        json_para_patch['sobrenome'] = "Oliveira"
+        response = api_client.patch(
+            endpoint_url_perfil_do_usuario,
+            data=json_para_patch,
+            format='json'
+        )
+        assert response.status_code == 200
+        assert json.loads(response.content)['sobrenome'] == 'Oliveira'
 
 
 class TestEnderecoViewSet:
     # TODO Continuar daqui, copiar do OutroEmail/Telefone
     pass
+
+    def test_list(self,
+                  db,
+                  api_client,
+                  usuario,
+                  outro_perfil,
+                  endereco,
+                  outro_endereco,
+                  grupo_administradores,
+                  grupo_colaboradores):
+        endpoint_url = reverse('endereco-list')
+
+        # Por Anônimo
+        response = api_client.get(endpoint_url)
+        assert response.status_code == 401
+
+        # Por Usuário autenticado
+        api_client.force_authenticate(user=usuario)
+        # do grupo Colaboradores
+        usuario.groups.set([grupo_colaboradores.id])
+        response = api_client.get(endpoint_url)
+        results = json.loads(response.content)['results']
+        assert response.status_code == 200
+        assert len(results) == 1
+        assert results[0]['logradouro'] == 'Rua Um'
+
+        # do grupo Administradores
+        usuario.groups.set([grupo_administradores.id])
+        response = api_client.get(endpoint_url)
+        results = json.loads(response.content)['results']
+        assert response.status_code == 200
+        assert len(results) == 2
+        assert results[1]['logradouro'] == 'Rua Dois'
+
+    def test_retrieve(self,
+                      db,
+                      api_client,
+                      usuario,
+                      outro_perfil,
+                      endereco,
+                      outro_endereco,
+                      grupo_administradores,
+                      grupo_colaboradores):
+        endpoint_url_endereco = reverse('endereco-detail', args=[endereco.id])
+        endpoint_url_outro_endereco = reverse('endereco-detail', args=[outro_endereco.id])
+
+        # Por Anônimo
+        response = api_client.get(endpoint_url_endereco)
+        assert response.status_code == 401
+
+        # Por Usuário autenticado
+        api_client.force_authenticate(user=usuario)
+        # do grupo Colaboradores
+        # - consultando telefone do próprio usuário
+        usuario.groups.set([grupo_colaboradores.id])
+        response = api_client.get(endpoint_url_endereco)
+        assert response.status_code == 200
+        assert json.loads(response.content)['logradouro'] == "Rua Um"
+        # - consultando telefone de outro usuário
+        response = api_client.get(endpoint_url_outro_endereco)
+        assert response.status_code == 404
+
+        # do grupo Administradores
+        usuario.groups.set([grupo_administradores.id])
+        response = api_client.get(endpoint_url_outro_endereco)
+        assert response.status_code == 200
+        assert json.loads(response.content)['logradouro'] == "Rua Dois"
+
+    def test_create(self,
+                    db,
+                    api_client,
+                    usuario,
+                    perfil,
+                    endereco,
+                    grupo_administradores,
+                    grupo_colaboradores):
+        endpoint_url = reverse('endereco-list')
+        perfil_url = 'http://testserver' + reverse('perfil-detail',
+                                                   args=[perfil.id])
+        municipio_url = 'http://testserver' + reverse('municipio-detail',
+                                                      args=[endereco.municipio.id])
+        json_para_post = {
+            "perfil": perfil_url,
+            "is_principal": False,
+            "logradouro": "Rua Z",
+            "numero": "25",
+            "bairro": "Bairro Z",
+            "municipio": municipio_url,
+            "cep": "57000-000"
+        }
+
+        # Por Anônimo
+        response = api_client.post(
+            endpoint_url,
+            data=json_para_post,
+            format='json'
+        )
+        assert response.status_code == 401
+
+        # Usuário autenticado
+        api_client.force_authenticate(user=usuario)
+
+        # do grupo Colaboradores
+        usuario.groups.set([grupo_colaboradores.id])
+        response = api_client.post(
+            endpoint_url,
+            data=json_para_post,
+            format='json'
+        )
+        endereco_criado = Endereco.objects.last()
+        endereco_criado_url = 'http://testserver' + \
+                              reverse('endereco-detail',
+                                      args=[endereco_criado.id])
+        expected_json = {
+            'url': endereco_criado_url,
+            'id': endereco_criado.id,
+            'criacao': endereco_criado.criacao.astimezone().isoformat(),
+            'modificacao': endereco_criado.modificacao.astimezone().isoformat(),
+            'is_principal': False,
+            'perfil': perfil_url,
+            'logradouro': endereco_criado.logradouro,
+            'numero': endereco_criado.numero,
+            'bairro': endereco_criado.bairro,
+            'complemento': endereco_criado.complemento,
+            'municipio': municipio_url,
+            'cep': endereco_criado.cep,
+            'endereco_completo': endereco_criado.endereco_completo
+        }
+        assert response.status_code == 201
+        assert json.loads(response.content) == expected_json
+
+        # do grupo Administradores
+        usuario.groups.set([grupo_administradores.id])
+        json_para_post['logradouro'] = "Rua A"
+        response = api_client.post(
+            endpoint_url,
+            data=json_para_post,
+            format='json'
+        )
+        endereco_criado = Endereco.objects.last()
+        endereco_criado_url = 'http://testserver' + \
+                              reverse('endereco-detail',
+                                      args=[endereco_criado.id])
+        expected_json = {
+            'url': endereco_criado_url,
+            'id': endereco_criado.id,
+            'criacao': endereco_criado.criacao.astimezone().isoformat(),
+            'modificacao': endereco_criado.modificacao.astimezone().isoformat(),
+            'is_principal': False,
+            'perfil': perfil_url,
+            'logradouro': endereco_criado.logradouro,
+            'numero': endereco_criado.numero,
+            'bairro': endereco_criado.bairro,
+            'complemento': endereco_criado.complemento,
+            'municipio': municipio_url,
+            'cep': endereco_criado.cep,
+            'endereco_completo': endereco_criado.endereco_completo
+        }
+        assert response.status_code == 201
+        assert json.loads(response.content) == expected_json
+
+        json_para_post['is_principal'] = "True"
+        response = api_client.post(
+            endpoint_url,
+            data=json_para_post,
+            format='json'
+        )
+        expected_json = {
+            'non_field_errors': ['Somente um endereço principal por perfil.']
+        }
+        assert response.status_code == 400
+        assert json.loads(response.content) == expected_json
+
+    def test_delete(self,
+                    db,
+                    api_client,
+                    usuario,
+                    grupo_administradores,
+                    grupo_colaboradores,
+                    endereco,
+                    outro_endereco):
+        endpoint_url = reverse('endereco-detail', args=[endereco.id])
+
+        endpoint_url_outro_endereco = \
+            reverse('endereco-detail', args=[outro_endereco.id])
+
+        # Por Anônimo
+        response = api_client.delete(endpoint_url)
+        assert response.status_code == 401
+
+        # Por Usuário autenticado
+        api_client.force_authenticate(user=usuario)
+        # do grupo Colaboradores
+        usuario.groups.set([grupo_colaboradores.id])
+        response = api_client.delete(endpoint_url)
+        assert response.status_code == 204
+        response = api_client.delete(endpoint_url_outro_endereco)
+        assert response.status_code == 404
+        # do grupo Administradores
+        usuario.groups.set([grupo_administradores.id])
+        response = api_client.delete(endpoint_url_outro_endereco)
+        assert response.status_code == 204
 
 
 class TestTelefoneViewSet:
@@ -131,7 +619,6 @@ class TestTelefoneViewSet:
                   outro_telefone,
                   grupo_administradores,
                   grupo_colaboradores):
-
         endpoint_url = reverse('telefone-list')
 
         # Por Anônimo
@@ -165,7 +652,6 @@ class TestTelefoneViewSet:
                       outro_telefone,
                       grupo_administradores,
                       grupo_colaboradores):
-
         endpoint_url_telefone = reverse('telefone-detail', args=[telefone.id])
         endpoint_url_outro_telefone = reverse('telefone-detail', args=[outro_telefone.id])
 
@@ -191,7 +677,108 @@ class TestTelefoneViewSet:
         assert response.status_code == 200
         assert json.loads(response.content)['numero'] == "(99) 99999-9999"
 
-    # TODO continuar dos outros methods igual OutroEmail
+    def test_create(self,
+                    db,
+                    api_client,
+                    usuario,
+                    perfil,
+                    telefone,
+                    grupo_administradores,
+                    grupo_colaboradores):
+        endpoint_url = reverse('telefone-list')
+        perfil_url = 'http://testserver' + reverse('perfil-detail',
+                                                   args=[perfil.id])
+        json_para_post = {
+            'perfil': perfil_url,
+            'numero': '(33) 3333-3333'
+        }
+
+        # Por Anônimo
+        response = api_client.post(
+            endpoint_url,
+            data=json_para_post,
+            format='json'
+        )
+        assert response.status_code == 401
+
+        # Usuário autenticado
+        api_client.force_authenticate(user=usuario)
+
+        # do grupo Colaboradores
+        usuario.groups.set([grupo_colaboradores.id])
+        response = api_client.post(
+            endpoint_url,
+            data=json_para_post,
+            format='json'
+        )
+        telefone_criado = Telefone.objects.last()
+        telefone_criado_url = 'http://testserver' + \
+                              reverse('telefone-detail',
+                                      args=[telefone_criado.id])
+        expected_json = {
+            'url': telefone_criado_url,
+            'id': telefone_criado.id,
+            'criacao': telefone_criado.criacao.astimezone().isoformat(),
+            'modificacao': telefone_criado.modificacao.astimezone().isoformat(),
+            'perfil': perfil_url,
+            'numero': telefone_criado.numero
+        }
+        assert response.status_code == 201
+        assert json.loads(response.content) == expected_json
+
+        # do grupo Administradores
+        usuario.groups.set([grupo_administradores.id])
+        json_para_post['numero'] = "(77) 77777-7777"
+        response = api_client.post(
+            endpoint_url,
+            data=json_para_post,
+            format='json'
+        )
+        telefone_criado = Telefone.objects.last()
+        telefone_criado_url = 'http://testserver' + \
+                              reverse('telefone-detail',
+                                      args=[telefone_criado.id])
+        expected_json = {
+            'url': telefone_criado_url,
+            'id': telefone_criado.id,
+            'criacao': telefone_criado.criacao.astimezone().isoformat(),
+            'modificacao': telefone_criado.modificacao.astimezone().isoformat(),
+            'perfil': perfil_url,
+            'numero': telefone_criado.numero
+        }
+        assert response.status_code == 201
+        assert json.loads(response.content) == expected_json
+
+    def test_delete(self,
+                    db,
+                    api_client,
+                    usuario,
+                    grupo_administradores,
+                    grupo_colaboradores,
+                    telefone,
+                    outro_telefone):
+        endpoint_url = reverse('telefone-detail', args=[telefone.id])
+
+        endpoint_url_outro_telefone = \
+            reverse('telefone-detail', args=[outro_telefone.id])
+
+        # Por Anônimo
+        response = api_client.delete(endpoint_url)
+        assert response.status_code == 401
+
+        # Por Usuário autenticado
+        api_client.force_authenticate(user=usuario)
+        # do grupo Colaboradores
+        usuario.groups.set([grupo_colaboradores.id])
+        response = api_client.delete(endpoint_url)
+        assert response.status_code == 204
+        response = api_client.delete(endpoint_url_outro_telefone)
+        assert response.status_code == 404
+        # do grupo Administradores
+        usuario.groups.set([grupo_administradores.id])
+        response = api_client.delete(endpoint_url_outro_telefone)
+        assert response.status_code == 204
+
 
 class TestOutroEmailViewSet:
 
@@ -271,8 +858,6 @@ class TestOutroEmailViewSet:
                     grupo_administradores,
                     grupo_colaboradores):
         endpoint_url = reverse('outroemail-list')
-        usuario_url = 'http://testserver' + reverse('customusuario-detail',
-                                                    args=[usuario.id])
         perfil_url = 'http://testserver' + reverse('perfil-detail',
                                                    args=[perfil.id])
         json_para_post = {
@@ -340,13 +925,14 @@ class TestOutroEmailViewSet:
                     db,
                     api_client,
                     usuario,
+                    outro_perfil,
                     grupo_administradores,
                     grupo_colaboradores,
                     outro_email):
         endpoint_url = reverse('outroemail-detail', args=[outro_email.id])
 
-        segundo_email = baker.make('OutroEmail', perfil=usuario.perfil)
-        endpoint_url_segundo_email = reverse('outroemail-detail', args=[segundo_email.id])
+        email_de_outro_perfil = baker.make('OutroEmail', perfil=outro_perfil)
+        endpoint_url_email_de_outro_perfil = reverse('outroemail-detail', args=[email_de_outro_perfil.id])
 
         # Por Anônimo
         response = api_client.delete(endpoint_url)
@@ -358,9 +944,11 @@ class TestOutroEmailViewSet:
         usuario.groups.set([grupo_colaboradores.id])
         response = api_client.delete(endpoint_url)
         assert response.status_code == 204
+        response = api_client.delete(endpoint_url_email_de_outro_perfil)
+        assert response.status_code == 404
         # do grupo Administradores
         usuario.groups.set([grupo_administradores.id])
-        response = api_client.delete(endpoint_url_segundo_email)
+        response = api_client.delete(endpoint_url_email_de_outro_perfil)
         assert response.status_code == 204
 
 

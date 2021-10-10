@@ -2,6 +2,7 @@ import pytest
 from django.contrib.auth.hashers import make_password
 from rest_framework.exceptions import ValidationError as rest_ValidationError
 from model_bakery import baker
+from pycpfcnpj import cpf, gen
 
 from controle_colaboradores_api.apps.perfis.serializers import (
     EnderecoSerializer,
@@ -161,9 +162,10 @@ class TestePerfilSerializer:
         return PerfilSerializer()
 
     def test_validate_cpf(self, serializer):
-        assert serializer.validate_cpf("000.000.000-00")
+        assert serializer.validate_cpf(gen.cpf_with_punctuation())
         with pytest.raises(rest_ValidationError):
             serializer.validate_cpf('00000000000')
+            serializer.validate_cpf('000.000.000-00')
 
 
 

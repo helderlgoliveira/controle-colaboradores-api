@@ -1,5 +1,6 @@
 import re
 
+from pycpfcnpj import cpf
 from rest_framework import serializers
 
 from controle_colaboradores_api.apps.usuarios.serializers import CustomUsuarioSerializer
@@ -15,6 +16,7 @@ from .models import (
 
 
 class EnderecoSerializer(serializers.HyperlinkedModelSerializer):
+    endereco_completo = serializers.ReadOnlyField()
 
     def validate_cep(self, value):
         cep_pattern = re.compile(r"^\d{5}-\d{3}$")
@@ -38,7 +40,8 @@ class EnderecoSerializer(serializers.HyperlinkedModelSerializer):
             'bairro',
             'complemento',
             'municipio',
-            'cep'
+            'cep',
+            'endereco_completo'
         ]
         read_only_fields = [
             # Fields do model Base:
@@ -240,7 +243,9 @@ class PerfilSerializer(serializers.HyperlinkedModelSerializer):
     def validate_cpf(self, value):
         cpf_pattern = re.compile(r"^\d{3}\.\d{3}\.\d{3}-\d{2}$")
         if not cpf_pattern.match(value):
-            raise serializers.ValidationError("CPF inválido. Informe no formato: 000.000.000-00")
+            raise serializers.ValidationError("CPF no formato incorreto. Informe no formato: 000.000.000-00")
+        if not cpf.validate(value):
+            raise serializers.ValidationError("CPF inválido.")
         return value
 
     def to_representation(self, instance):
@@ -248,8 +253,6 @@ class PerfilSerializer(serializers.HyperlinkedModelSerializer):
         data = super().to_representation(instance)
         data['usuario'] = CustomUsuarioSerializer(instance.usuario,
                                                   context={'request': request}).data
-        data['usuario_modificacao'] = CustomUsuarioSerializer(instance.usuario_modificacao,
-                                                              context={'request': request}).data
         data['cargos'] = CargoSerializer(instance.cargos.all(),
                                          many=True,
                                          context={'request': self.context['request']}).data

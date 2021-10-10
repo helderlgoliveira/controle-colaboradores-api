@@ -58,6 +58,9 @@ class PerfilViewSet(AccessViewSetMixin,
     def perform_update(self, serializer):
         serializer.save(usuario_modificacao=self.request.user)
 
+    # Não há actions para Ativar e Desativar porque a manipulação
+    # da ativação do perfil é feita pelas Views do app 'usuarios'
+
 
 class EnderecoViewSet(AccessViewSetMixin,
                       mixins.CreateModelMixin,
