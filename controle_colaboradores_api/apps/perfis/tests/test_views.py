@@ -399,8 +399,6 @@ class TestPerfilViewSet:
 
 
 class TestEnderecoViewSet:
-    # TODO Continuar daqui, copiar do OutroEmail/Telefone
-    pass
 
     def test_list(self,
                   db,

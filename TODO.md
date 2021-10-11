@@ -1,12 +1,18 @@
 # TO DO
 
+1) Passar vista nos testes somente para ver se algo deixado sem querer (acho que não).
+2) DEPLOY NO HEROKU, INCLUIR LINK NO README.
 
-DJANGO REVERSION + AUDIT LOG???
+## Stages para deploy / Instruções pro README:
+
+- manage.py migrate (O MAKEMIGRATIONS SOMENTE NO DEV PARA COMMIT, na production deve usar as mesmas migrations)
+- executar o cadastrar localidades_brasileiras
+- executar o cadastrar grupos
+- criar o usuário admin
+- docker-compose com server, db e envs
+DJANGO REVERSION + AUDIT LOG??? (dessa vez melhor não, não é preciso)
 
 
-TESTE DOS PERFIS (VIEWSETS E SERIALIZERS)
-
-e depois ver coverage dos testes comuns apos as mudanças que fiz
 1) Fazer testes DRF olhar site do DRF e se esse tá atualizado:
 https://dev.to/sherlockcodes/pytest-with-django-rest-framework-from-zero-to-hero-8c4
 
@@ -33,9 +39,4 @@ Our philosophy is to test the serializers, and use the (now tested/trusted) seri
 - fazer create e update no serializer onde há nested relacionamentos [Writable nested serializers](https://www.django-rest-framework.org/api-guide/relations/#writable-nested-serializers)
 - custom to_representation para retornar os dados completos, mas aceitar apenas PK no post [site aqui](https://stackoverflow.com/a/46944720)
 
-## Stages para deploy
 
-- manage.py migrate (O MAKEMIGRATIONS SOMENTE NO DEV PARA COMMIT, na production deve usar as mesmas migrations)
-- executar o cadastrar localidades_brasileiras
-- executar o cadastrar grupos
-- docker-compose com server, db e envs

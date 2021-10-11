@@ -1,8 +1,8 @@
 [tool.poetry]
-name = "controlecolaboradoresapi"
+name = "controle-colaboradores-api"
 version = "0.1.0"
-description = ""
-authors = ["Hélder Lima Gonçalves de Oliveira <helderlgoliveira@gmail.com>"]
+description = "REST API para controle de colaboradores de uma empresa/instituição."
+authors = ["Hélder Oliveira <helderlgoliveira@gmail.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.8"
