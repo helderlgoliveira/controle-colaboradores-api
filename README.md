@@ -1,6 +1,6 @@
 # API para Controle de Colaboradores
 
-REST API para controle de colaboradores de uma empresa/instituição.
+Modelo de API REST para controle de colaboradores de uma empresa/instituição, com dados essenciais relativos aos perfis dos colaboradores, inclusive com gerenciamento de cargos e departamentos.
 
 Documentação feita com [Swagger](https://swagger.io/):
 [Acesse aqui a documentação on-line da API]().
