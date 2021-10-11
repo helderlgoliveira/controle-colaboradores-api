@@ -1,7 +1,10 @@
 # TO DO
 
 1) Passar vista nos testes somente para ver se algo deixado sem querer (acho que não).
-2) DEPLOY NO HEROKU, INCLUIR LINK NO README.
+2) MERGE NO BRANCH MASTER!!!!
+3) DEPLOY NO HEROKUI
+3.1) INCLUIR LINK NO README
+3.2) INCLUIR LINK NO QUADRO LINK/DESCRIPTION DO REPOSITÓRIO.
 
 ## Stages para deploy / Instruções pro README:
 
