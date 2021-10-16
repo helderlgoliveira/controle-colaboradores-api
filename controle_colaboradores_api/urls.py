@@ -32,14 +32,14 @@ schema_view = get_schema_view(
       title="Controle de Colaboradores API",
       default_version='v1',
       description="API para controle de aspectos relativos a colaboradores em uma empresa/instituição.\n\n"
-                  "Inicialmente, cadastre os `cargos` e os `departamentos`.\n"
-                  "Após, crie os `usuarios` e seus respectivos `perfis`.\n"
-                  "Os `grupos` disponíveis para os `usuarios` são: Administradores e Colaboradores. São utilizados "
+                  "Inicialmente, cadastre os **cargos** e os **departamentos**.\n"
+                  "Após, crie os **usuarios** e seus respectivos **perfis**.\n"
+                  "Os **grupos** disponíveis para os **usuarios** são: Administradores e Colaboradores. São utilizados "
                   "para controlar o acesso aos endpoints de acordo com as permissões dos grupos.\n"
-                  "Os endpoints `endereços` e `telefones` referem-se aos `perfis`.\n"
-                  "O endpoint `pwd-reset-tokens` serve para criar tokens para resetar a senha do usuário, "
+                  "Os endpoints **endereços** e **telefones** referem-se aos **perfis**.\n"
+                  "O endpoint **pwd-reset-tokens** serve para criar tokens para resetar a senha do usuário, "
                   "os quais são enviados automaticamente para o e-mail do usuário e, posteriormente, "
-                  "utilizados com o endpoint `/usuarios/{id}/mudar_password_apos_reset/`.",
+                  "utilizados com o endpoint */usuarios/{id}/mudar_password_apos_reset/*.",
       terms_of_service="",
       contact=openapi.Contact(email=settings.ADMINS[0][1]),
       license=openapi.License(name="BSD License"),
