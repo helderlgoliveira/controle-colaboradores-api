@@ -22,7 +22,7 @@ Caso prefira via pip (indica-se sempre executar dentro de [virtualenv](https://v
 pip install -r requirements.txt
 ```
 
-Configure as seguintes variáveis de ambiente:
+Defina as seguintes variáveis de ambiente:
 ```
 SECRET_KEY=''
 DATABASE_HOST=''
@@ -31,7 +31,17 @@ DATABASE_USER=''
 DATABASE_PASSWORD=''
 DATABASE_PORT=
 DJANGO_SETTINGS_MODULE=''
-PYTHONPATH="/caminho/para/projeto/:$PYTHONPATH"
+PYTHONPATH='/caminho/para/projeto/:$PYTHONPATH'
+EMAIL_HOST=''
+EMAIL_HOST_USER=''
+EMAIL_PORT=587
+EMAIL_HOST_PASSWORD=''
+DEFAULT_FROM_EMAIL=''
+ADMINS='Nome1/email1@email.com Nome2/email2@email.com'
+PRODUCTION_ALLOWED_HOSTS='dominio1.com dominio2.com'
+DJANGO_SUPERUSER_EMAIL=''
+DJANGO_SUPERUSER_USERNAME=''
+DJANGO_SUPERUSER_PASSWORD=''
 ```
 
 ## Execução
@@ -41,8 +51,15 @@ No ambiente virtual (`poetry shell` ou virtualenv ativado):
 ./manage.py migrate
 ./manage.py criar_grupos_do_projeto
 ./manage.py cadastrar_localidades_brasileiras
+./manage.py createsuperuser --noinput
 ./manage.py runserver
 ```
+
+Utilize o _superuser_ definido nas variáveis de ambiente para cadastrar o primeiro usuário e vinculá-lo ao grupo de Administradores, pode ser feito tanto via _shell_ quanto por meio do endpoint de cadastro de usuários.
+
+Após, é indicado mudar a senha do _superuser_.
+
+A partir do cadastro do primeiro usuário do grupo Administrador, não é mais necessário utilizar o _superuser_.
 
 ## Desenvolvimento
 
