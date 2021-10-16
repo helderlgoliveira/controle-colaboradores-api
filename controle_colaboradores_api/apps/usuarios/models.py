@@ -80,7 +80,7 @@ class PasswordResetToken(models.Model):
             f'Criar nova senha - {settings.NOME_DO_PROJETO}',
             f'Olá!\n'
             f'Conforme o solicitado, segue o link para criar a sua nova senha: \n'
-            f'{settings.URL_BASE_CRIAR_NOVA_PASSWORD_APOS_RESETAR_PASSWORD}{self.token}',
+            f'{settings.URL_FRONTEND_BASE_PARA_ADICIONAR_TOKEN_PARA_EMAIL_DE_CRIAR_NOVA_PASSWORD}{self.token}',
             None,
             [self.usuario.email],
             fail_silently=False,
