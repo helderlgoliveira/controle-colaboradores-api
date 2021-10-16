@@ -7,7 +7,7 @@ class CustomUsuarioAccessPolicy(AccessPolicy):
             "action": ["list", "retrieve",
                        "create", "mudar_grupo",
                        "desativar"],
-            "principal": ["group:Administradores"],
+            "principal": ["group:Administradores", "admin"],
             "effect": "allow"
         },
         {
