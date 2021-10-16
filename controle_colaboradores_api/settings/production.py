@@ -20,6 +20,7 @@ DATABASES = {
 }
 
 # TODO Definir as configurações de e-mail:
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_USE_TSL = True
 EMAIL_HOST = os.getenv("EMAIL_HOST")
 EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
