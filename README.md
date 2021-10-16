@@ -55,11 +55,11 @@ No ambiente virtual (`poetry shell` ou virtualenv ativado):
 ./manage.py runserver
 ```
 
-Utilize o _superuser_ definido nas variáveis de ambiente para cadastrar o primeiro usuário e vinculá-lo ao grupo de Administradores, pode ser feito tanto via _shell_ quanto por meio do endpoint de cadastro de usuários.
+Utilize o _superuser_ definido nas variáveis de ambiente para cadastrar o primeiro usuário e vinculá-lo ao grupo de Administradores, pode ser feito tanto via _shell_ quanto por meio do _endpoint_ de cadastro de usuários.
 
 Após, é indicado mudar a senha do _superuser_.
 
-A partir do cadastro do primeiro usuário do grupo Administrador, não é mais necessário utilizar o _superuser_.
+A partir do cadastro do primeiro usuário do grupo de Administradores, não é mais necessário utilizar o _superuser_.
 
 ## Desenvolvimento
 
