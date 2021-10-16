@@ -28,10 +28,10 @@ class TestMunicipioViewSet:
         assert results[3]['nome'] == "Bela Cidade"
 
     def test_retrieve(self, db, api_client):
-        municipio = baker.make('Municipio', nome="Bela Cidade")
+        municipio = baker.make('Municipio', nome="Nova Metrópole")
 
         response = api_client.get(
             reverse('municipio-detail', args=[municipio.id])
         )
         assert response.status_code == 200
-        assert json.loads(response.content)['nome'] == "Bela Cidade"
+        assert json.loads(response.content)['nome'] == "Nova Metrópole"

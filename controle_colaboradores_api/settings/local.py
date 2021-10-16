@@ -4,7 +4,6 @@ DEBUG = True
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
-
 ALLOWED_HOSTS = ['*']
 
 # ADMINS: A list of all the people who get code error notifications.
@@ -22,5 +21,3 @@ DATABASES = {
         'PORT': os.getenv("DATABASE_PORT")
     }
 }
-
-# INSTALLED_APPS += ("debug_toolbar",)

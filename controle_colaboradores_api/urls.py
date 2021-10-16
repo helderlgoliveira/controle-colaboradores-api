@@ -13,7 +13,10 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+
+from django.shortcuts import redirect
 from django.urls import path, re_path, include
+from django.conf import settings
 
 from rest_framework.routers import DefaultRouter
 from rest_framework import permissions
@@ -38,7 +41,7 @@ schema_view = get_schema_view(
                   "os quais são enviados automaticamente para o e-mail do usuário e, posteriormente, "
                   "utilizados com o endpoint `/usuarios/{id}/mudar_password_apos_reset/`.",
       terms_of_service="",
-      contact=openapi.Contact(email="helderlgoliveira@gmail.com"),
+      contact=openapi.Contact(email=settings.ADMINS[0][1]),
       license=openapi.License(name="BSD License"),
    ),
    public=True,
@@ -60,6 +63,7 @@ main_router.registry.extend(localidades_brasileiras_router.registry)
 api_v1 = main_router.urls + api_docs_urlpatterns
 
 urlpatterns = [
-   path('api/v1/', include(api_v1)),
-   path('api/auth/', include('rest_framework.urls', namespace='rest_framework'))
+    path('', lambda request: redirect('api/v1/', permanent=False)),
+    path('api/v1/', include(api_v1)),
+    path('api/auth/', include('rest_framework.urls', namespace='rest_framework'))
 ]

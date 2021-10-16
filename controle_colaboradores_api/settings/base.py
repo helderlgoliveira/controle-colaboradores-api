@@ -26,7 +26,6 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 DEBUG = True
 
 # Application definition
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -36,8 +35,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'rest_framework',
-    'rest_framework.authtoken',
-
     'drf_yasg',
 
     'controle_colaboradores_api.apps.localidades_brasileiras',
@@ -101,20 +98,14 @@ PASSWORD_HASHERS = [
     'django.contrib.auth.hashers.BCryptSHA256PasswordHasher',
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
 
 LANGUAGE_CODE = 'pt-br'
-
 TIME_ZONE = 'America/Sao_Paulo'
-
 USE_I18N = True
-
 USE_L10N = True
-
 USE_TZ = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
@@ -137,8 +128,7 @@ LOGOUT_REDIRECT_URL = 'api-root'
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.BasicAuthentication',
-        'rest_framework.authentication.SessionAuthentication',
-        'rest_framework.authentication.TokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication'
     ),
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.AllowAny',
@@ -150,7 +140,7 @@ REST_FRAMEWORK = {
         'rest_framework.throttling.UserRateThrottle',
     ),
     'DEFAULT_THROTTLE_RATES': {
-        'anon': '60/minute',  # second, day, month, year
+        'anon': '60/minute',
         'user': '60/minute'
     }
 }
@@ -161,11 +151,10 @@ MIDDLEWARE_CLASSES = [
 
 # Swagger - Documentação on-line da API
 SWAGGER_SETTINGS = {
-    'USE_SESSION_AUTH': False,  # True caso desejar login pelas urls do DRF
+    'USE_SESSION_AUTH': False,  # True caso deseje login pelas urls do DRF
     'LOGIN_URL': 'rest_framework:login',
     'LOGOUT_URL': 'rest_framework:logout'
 }
-
 
 # Settings para o projeto atual:
 NOME_DO_PROJETO = "Sistema de Controle de Colaboradores"
@@ -175,5 +164,6 @@ USER_GROUPS_DO_PROJETO = [
     'Colaboradores'
 ]
 
-# TODO definir o reverse para:
+# TODO Definir o reverse para a url abaixo:
+#  (Obs: é utilizada no app usuarios > models > PasswordResetToken > enviar_token_por_email)
 URL_BASE_CRIAR_NOVA_PASSWORD_APOS_RESETAR_PASSWORD = ".../"

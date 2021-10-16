@@ -6,7 +6,7 @@ Documentação feita com [Swagger](https://swagger.io/):
 [Acesse aqui a documentação on-line da API]().
 
 
-## Instalação dos requisitos
+## Instalação e requisitos
 
 Baixe ou clone o repositório:
 ```
@@ -20,6 +20,18 @@ poetry install --no-dev
 Caso prefira via pip (indica-se sempre executar dentro de [virtualenv](https://virtualenv.pypa.io/en/latest/)):
 ```
 pip install -r requirements.txt
+```
+
+Configure as seguintes variáveis de ambiente:
+```
+SECRET_KEY=''
+DATABASE_HOST=''
+DATABASE_NAME=''
+DATABASE_USER=''
+DATABASE_PASSWORD=''
+DATABASE_PORT=
+DJANGO_SETTINGS_MODULE=''
+PYTHONPATH="/caminho/para/projeto/:$PYTHONPATH"
 ```
 
 ## Execução

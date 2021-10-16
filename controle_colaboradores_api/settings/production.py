@@ -2,32 +2,28 @@ from .base import *
 
 DEBUG = False
 
+# TODO Definir os admins e os allowed_hosts:
 ADMINS = [('Hélder', 'helderlgoliveira@gmail.com')]
 ALLOWED_HOSTS = ['']
 
-# Database
-# https://docs.djangoproject.com/en/3.2/ref/settings/#databases
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.getenv("DATABASE_NAME"),
+        'USER': os.getenv("DATABASE_USER"),
+        'PASSWORD': os.getenv("DATABASE_PASSWORD"),
+        'HOST': os.getenv("DATABASE_HOST"),
+        'PORT': os.getenv("DATABASE_PORT")
+    }
+}
 
-## Original - Padrão:
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
-
-# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-
-"""
-# Email produção
-
-EMAIL_HOST = 'localhost'
-EMAIL_HOST_USER = 'no-reply@fusion.com.br'
+# TODO Definir as configurações de e-mail:
+EMAIL_HOST = ''
+EMAIL_HOST_USER = ''
 EMAIL_PORT = 587
 EMAIL_USE_TSL = True
-EMAIL_HOST_PASSWORD = 'fusion'
-DEFAULT_FROM_EMAIL = 'contato@fusion.com.br'
-"""
+EMAIL_HOST_PASSWORD = ''
+DEFAULT_FROM_EMAIL = ''
 
 # Recursos Extras de Segurança do Django
 SECURE_HSTS_SECONDS = True

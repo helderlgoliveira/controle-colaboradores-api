@@ -981,7 +981,7 @@ class TestCargoViewSet:
         assert results[0]['nome'] == "Desenvolvedor Python"
 
         # do grupo Administradores
-        usuario.perfil.cargos.clear()  # limpando, porque admins listam mesmo sem vínculo
+        usuario.perfil.cargos.clear()  # limpando, porque admins podem listar mesmo sem vínculo
         usuario.groups.set([grupo_administradores.id])
         response = api_client.get(endpoint_url)
         results = json.loads(response.content)['results']
@@ -1298,7 +1298,7 @@ class TestDepartamentoViewSet:
         assert json.loads(response.content)['nome'] == "Departamento Produtivo"
 
         # do grupo Administradores
-        usuario.perfil.departamentos.clear()  # limpando, porque admins listam mesmo sem vínculo
+        usuario.perfil.departamentos.clear()  # limpando, porque admins podem listar mesmo sem vínculo
         usuario.groups.set([grupo_administradores.id])
         response = api_client.get(endpoint_url)
         assert response.status_code == 200

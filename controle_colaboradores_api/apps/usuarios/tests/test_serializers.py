@@ -6,6 +6,15 @@ from rest_framework.exceptions import ValidationError as rest_ValidationError
 from django.core.exceptions import ValidationError
 from model_bakery import baker
 
+from controle_colaboradores_api.apps.usuarios.serializers import (
+    CustomUsuarioSerializer,
+    CustomUsuarioMudarPasswordSerializer,
+    CustomUsuarioMudarPasswordAposResetSerializer,
+    CustomUsuarioMudarEmailSerializer,
+    CustomUsuarioMudarGrupoSerializer,
+    CustomUsuarioMudarAtivacaoSerializer,
+    PasswordResetTokenSerializer
+)
 
 @pytest.fixture
 def usuario():
@@ -24,17 +33,6 @@ def token(usuario):
 def grupo_colaboradores():
     return baker.make('auth.Group',
                       name="Colaboradores")
-
-
-from controle_colaboradores_api.apps.usuarios.serializers import (
-    CustomUsuarioSerializer,
-    CustomUsuarioMudarPasswordSerializer,
-    CustomUsuarioMudarPasswordAposResetSerializer,
-    CustomUsuarioMudarEmailSerializer,
-    CustomUsuarioMudarGrupoSerializer,
-    CustomUsuarioMudarAtivacaoSerializer,
-    PasswordResetTokenSerializer
-)
 
 
 class TestCustomUsuarioSerializer:
@@ -154,6 +152,7 @@ class TestPasswordResetTokenSerializer:
             serializer.validate({"usuario": token.usuario,
                                  "token": token.token})
             assert e_info.value == "Token já utilizado."
+
         # Token com prazo expirado
         token.ativo = True
         token.criacao -= timedelta(days=1)
@@ -164,7 +163,7 @@ class TestPasswordResetTokenSerializer:
             assert e_info.value == "Token expirado."
 
     def test_create(self, serializer, token):
-        # Se houver token ativo pendente, ele será retornado
+        # Se houver token ativo pendente, ele será retornado em vez de criar um novo
         assert serializer.create({"usuario": token.usuario}) == token
 
         # Se não houver token ativo pendente, será criado um novo
@@ -173,7 +172,6 @@ class TestPasswordResetTokenSerializer:
         novo_token = serializer.create({"usuario": token.usuario})
         assert novo_token.id
         assert novo_token != token
-
 
     def test_update(self, serializer, token):
         assert token.ativo is True

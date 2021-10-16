@@ -1,10 +1,11 @@
 # TO DO
 
-1) Passar vista nos testes somente para ver se algo deixado sem querer (acho que não).
 2) MERGE NO BRANCH MASTER!!!!
-3) DEPLOY NO HEROKUI
+3) DEPLOY NO HEROKU (COM ENV VARS, E VER SETTINGS PRODUCTION)
+4) ALLOWED HOSTS
 3.1) INCLUIR LINK NO README
 3.2) INCLUIR LINK NO QUADRO LINK/DESCRIPTION DO REPOSITÓRIO.
+5) Codecov
 
 ## Stages para deploy / Instruções pro README:
 
