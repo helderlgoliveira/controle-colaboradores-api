@@ -164,6 +164,6 @@ USER_GROUPS_DO_PROJETO = [
     'Colaboradores'
 ]
 
-# TODO Definir o reverse para a url abaixo:
+# TODO Definir a url abaixo que será enviada por e-mail ao usuário quando solicitar reset da password:
 #  (Obs: é utilizada no app usuarios > models > PasswordResetToken > enviar_token_por_email)
-URL_BASE_CRIAR_NOVA_PASSWORD_APOS_RESETAR_PASSWORD = ".../"
+URL_FRONTEND_BASE_PARA_ADICIONAR_TOKEN_PARA_EMAIL_DE_CRIAR_NOVA_PASSWORD = "url/criar-nova-senha?token="

@@ -6,8 +6,6 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 ALLOWED_HOSTS = ['*']
 
-ADMINS = [('Hélder', 'helderlgoliveira@gmail.com')]
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
