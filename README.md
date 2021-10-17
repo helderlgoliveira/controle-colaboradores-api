@@ -2,8 +2,16 @@
 
 Modelo de API REST para controle de colaboradores de uma empresa/instituição, com dados essenciais relativos aos perfis dos colaboradores, inclusive com gerenciamento de cargos e departamentos.
 
-Documentação feita com [Swagger](https://swagger.io/):
-[Acesse aqui a documentação on-line da API]().
+[Acesse aqui a documentação on-line da API](https://api-controle-colaboradores.herokuapp.com/api/v1/swagger).
+Para utilizá-la on-line, pode fazer _login_ com os seguintes usuários:
+
+> Usuário do grupo de **Administradores**:
+> _Email/Username_: administrador@email.com
+> _Senha_: administrador
+> 
+> Usuário do grupo de **Colaboradores**:
+> _Email/Username_: colaborador@email.com
+> _Senha_: colaborador
 
 
 ## Instalação e requisitos
