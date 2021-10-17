@@ -1,1 +1,1 @@
-web: gunicorn cotrole_colaboradores_api.wsgi
+web: gunicorn controle_colaboradores_api.wsgi
