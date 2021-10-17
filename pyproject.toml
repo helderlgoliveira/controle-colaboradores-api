@@ -15,6 +15,7 @@ argon2-cffi = "^21.1.0"
 drf-yasg = "^1.20.0"
 pycpfcnpj = "^1.5.1"
 whitenoise = "^5.3.0"
+dj-database-url = "^0.5.0"
 
 [tool.poetry.dev-dependencies]
 coverage = "^5.5"
