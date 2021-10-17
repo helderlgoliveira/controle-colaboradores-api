@@ -1,6 +1,6 @@
 from .base import *
 
-DEBUG = True
+DEBUG = False
 
 # ADMINS: A list of all the people who get code error notifications.
 # When DEBUG=False and AdminEmailHandler is configured in LOGGING (done by default),
@@ -35,7 +35,7 @@ SECURE_CONTENT_TYPE_NOSNIFF = True
 SECURE_BROWSER_XSS_FILTER = True
 CSRF_COOKIE_HTTPONLY = True
 X_FRAME_OPTIONS = 'DENY'
-# TODO ativar settings abaixo quando dispuser de SSL:
+# TODO Ativar settings abaixo quando dispuser de SSL:
 SECURE_SSL_REDIRECT = False
 SESSION_COOKIE_SECURE = False
 CSRF_COOKIE_SECURE = False
