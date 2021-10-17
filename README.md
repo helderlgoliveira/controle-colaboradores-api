@@ -51,7 +51,8 @@ No ambiente virtual (`poetry shell` ou virtualenv ativado):
 ./manage.py criar_grupos_do_projeto
 ./manage.py cadastrar_localidades_brasileiras
 ./manage.py createsuperuser --noinput
-./manage.py runserver
+./manage.py collectstatic
+gunicorn controle_colaboradores_api.wsgi
 ```
 
 Utilize o _superuser_ definido nas variáveis de ambiente para cadastrar o primeiro usuário e vinculá-lo ao grupo de Administradores, pode ser feito tanto via _shell_ quanto por meio do _endpoint_ de cadastro de usuários.
