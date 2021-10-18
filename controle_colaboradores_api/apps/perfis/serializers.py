@@ -319,3 +319,10 @@ class PerfilSerializer(serializers.HyperlinkedModelSerializer):
             # Fields do model BaseParaModelsImportantes:
             'usuario_modificacao',
         ]
+        extra_kwargs = {
+            'diretor_em': {"required": False},
+            'diretor_substituto_em': {"required": False},
+            'enderecos': {"required": False},
+            'telefones': {"required": False},
+            'outros_emails': {"required": False}
+        }
