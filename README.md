@@ -6,12 +6,14 @@ Modelo de API REST para controle de colaboradores de uma empresa/instituição, 
 Para utilizá-la on-line, realize _login_ com os seguintes usuários:
 
 > Usuário do grupo de **Administradores**:
-> _Email/Username_: administrador@email.com
-> _Senha_: administrador
 > 
+> - _Email/Username_: administrador@email.com
+> - _Senha_: administrador
+
 > Usuário do grupo de **Colaboradores**:
-> _Email/Username_: colaborador@email.com
-> _Senha_: colaborador
+> 
+> - _Email/Username_: colaborador@email.com
+> - _Senha_: colaborador
 
 
 ## Instalação e requisitos
