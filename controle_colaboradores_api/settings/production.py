@@ -2,10 +2,6 @@ from .base import *
 
 DEBUG = False
 
-# ADMINS: A list of all the people who get code error notifications.
-# When DEBUG=False and AdminEmailHandler is configured in LOGGING (done by default),
-# Django emails these people the details of exceptions raised in the request/response cycle.
-ADMINS = [tuple(i.split('/')) for i in os.environ.get('ADMINS').split(' ')]
 ALLOWED_HOSTS = os.environ.get('PRODUCTION_ALLOWED_HOSTS').split(' ')
 
 DATABASES = {
